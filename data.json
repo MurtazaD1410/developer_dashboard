@@ -1,0 +1,871 @@
+[
+  {
+    "month": "January 2025",
+    "items": [
+      {
+        "id": "cm5tiu4fa016dv9wejco17ysd",
+        "createdAt": "2025-01-12T11:17:59.399Z",
+        "updatedAt": "2025-01-12T16:57:33.444Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2272326941",
+        "prNumber": 275,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2025-01-12T01:38:53.000Z",
+        "prClosedAt": "2025-01-12T10:50:36.000Z",
+        "prMergedAt": null,
+        "hash": "e14c67467bd3ad647046a36c45071261d1f652bdc0bf304e405c8768e10f0de9",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ]
+      },
+      {
+        "id": "cm5tiu59i0174v9wehme0rhd9",
+        "createdAt": "2025-01-12T11:18:00.486Z",
+        "updatedAt": "2025-01-12T16:57:34.239Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2262355249",
+        "prNumber": 273,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2025-01-06T17:28:00.000Z",
+        "prClosedAt": "2025-01-06T18:22:35.000Z",
+        "prMergedAt": "2025-01-06T18:22:35.000Z",
+        "hash": "6965cb9160e84dd752ec9c5b85e3b848bee2604a3449f71b2c0ee0bb696d1bf6",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": []
+      },
+      {
+        "id": "cm5tiu4ur016pv9wewf0b7vlk",
+        "createdAt": "2025-01-12T11:17:59.956Z",
+        "updatedAt": "2025-01-12T16:57:33.785Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2263741972",
+        "prNumber": 274,
+        "prTitle": "feat: layout improvements",
+        "prState": "open",
+        "prHeadRef": "dm/layout",
+        "prBaseRef": "master",
+        "prDescription": "Major improvements to overall layout, stretching the calendar component to reach the corners of the screen and use the most screen real estate as possible, both on desktop and mobile, while also reducing font-size for better readability:\r\n\r\n| Events | Schedule |\r\n| - | - |\r\n| ![Screen Shot 2025-01-08 at 02 23 26](https://github.com/user-attachments/assets/6c8c09b7-2035-45ed-a0de-0de9c2cf0297) | ![Screen Shot 2025-01-08 at 02 23 37](https://github.com/user-attachments/assets/a94c1f62-0094-4fc9-a62b-32939ca53b3d) |\r\n| ![Screen Shot 2025-01-08 at 02 25 25](https://github.com/user-attachments/assets/1e47074c-1a42-4352-a861-ead700c21c4a) | ![Screen Shot 2025-01-08 at 02 25 29](https://github.com/user-attachments/assets/126723c3-8f77-4dcc-bbb5-e56d8f429cbf) |\r\n\r\nThe missing events form link and the \"horários uminho\" link were moved from the previous location under the calendar component to a new `MoreButton` component that encapsulates the Feedback button and the missing events form (now \"Add Event\") or the \"horários uminho\" link, depending on the page:\r\n\r\n| Events | Schedule |\r\n| - | - |\r\n| ![image](https://github.com/user-attachments/assets/abd3ed89-eda0-4ad1-968f-6ddb970acea3) | ![image](https://github.com/user-attachments/assets/11b5c3ea-1779-4947-a063-1179d7f26bdc) |\r\n\r\nThe refresh button also moved from under the calendar to the sidebar:\r\n\r\n![image](https://github.com/user-attachments/assets/479d45c5-4015-416b-90d8-42f99ac11cf5)\r\n\r\n",
+        "prCreatorId": "cm5ticmv400yfv9weuzlxgxlc",
+        "prCreatedAt": "2025-01-07T12:00:20.000Z",
+        "prClosedAt": null,
+        "prMergedAt": null,
+        "hash": "afdb8b93aa754d10023c064861c14e8353b2c42543e98b814bfa71d9ef09d4ff",
+        "prCreator": {
+          "id": "cm5ticmv400yfv9weuzlxgxlc",
+          "createdAt": "2025-01-12T11:04:23.489Z",
+          "updatedAt": "2025-01-12T16:57:41.626Z",
+          "userName": "diogogmatos",
+          "userAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+          "userUsername": "diogogmatos"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticnbh00yvv9weih9c9q3q",
+            "name": "enhancement",
+            "color": "a2eeef"
+          }
+        ],
+        "prAssignees": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ],
+        "prReviewers": [
+          {
+            "id": "cm5tico1p00zwv9welncxu4x7",
+            "assigneeOrReviewerName": "nunom27",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/30806591?v=4",
+            "assigneeOrReviewerUsername": "nunom27"
+          },
+          {
+            "id": "cm5tiu52y016wv9wezfosfjyo",
+            "assigneeOrReviewerName": "joaodiaslobo",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/30907944?v=4",
+            "assigneeOrReviewerUsername": "joaodiaslobo"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "month": "December 2024",
+    "items": [
+      {
+        "id": "cm5tiu5gr017dv9we78igit79",
+        "createdAt": "2025-01-12T11:18:00.747Z",
+        "updatedAt": "2025-01-12T16:57:34.504Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2208662935",
+        "prNumber": 271,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2024-12-01T01:50:53.000Z",
+        "prClosedAt": "2024-12-15T01:45:03.000Z",
+        "prMergedAt": null,
+        "hash": "ab3e7eb2f25f59d6f0c3ef5c05977159d6548301f8e5967fb2869e1d7acb5f69",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "month": "November 2024",
+    "items": [
+      {
+        "id": "cm5tiu5qn017pv9wez4meymso",
+        "createdAt": "2025-01-12T11:18:01.103Z",
+        "updatedAt": "2025-01-12T16:57:34.864Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2197054037",
+        "prNumber": 270,
+        "prTitle": "feat: add analytics",
+        "prState": "closed",
+        "prHeadRef": "nm/analytics",
+        "prBaseRef": "master",
+        "prDescription": "",
+        "prCreatorId": "cm5tico0400zsv9webb381of7",
+        "prCreatedAt": "2024-11-24T23:47:53.000Z",
+        "prClosedAt": "2024-11-25T00:37:37.000Z",
+        "prMergedAt": "2024-11-25T00:37:37.000Z",
+        "hash": "eff893a77c4baf1f0d6f4e415307bcde196214949a62223f72a84257a8b2e742",
+        "prCreator": {
+          "id": "cm5tico0400zsv9webb381of7",
+          "createdAt": "2025-01-12T11:04:24.964Z",
+          "updatedAt": "2025-01-12T16:57:34.842Z",
+          "userName": "nunom27",
+          "userAvatar": "https://avatars.githubusercontent.com/u/30806591?v=4",
+          "userUsername": "nunom27"
+        },
+        "prLabel": [],
+        "prAssignees": [
+          {
+            "id": "cm5tico1p00zwv9welncxu4x7",
+            "assigneeOrReviewerName": "nunom27",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/30806591?v=4",
+            "assigneeOrReviewerUsername": "nunom27"
+          }
+        ],
+        "prReviewers": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          },
+          {
+            "id": "cm5tiu5x0017wv9wedxr91645",
+            "assigneeOrReviewerName": "AfonsoMartins26",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/145707571?v=4",
+            "assigneeOrReviewerUsername": "AfonsoMartins26"
+          }
+        ]
+      },
+      {
+        "id": "cm5tiu60a0181v9we7j138lly",
+        "createdAt": "2025-01-12T11:18:01.451Z",
+        "updatedAt": "2025-01-12T16:57:35.233Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2188255709",
+        "prNumber": 269,
+        "prTitle": "fix: wrong logo when on \"dark\" appearance setting",
+        "prState": "closed",
+        "prHeadRef": "dm/logo-bug",
+        "prBaseRef": "master",
+        "prDescription": "Finally fixed!",
+        "prCreatorId": "cm5ticmv400yfv9weuzlxgxlc",
+        "prCreatedAt": "2024-11-19T18:59:19.000Z",
+        "prClosedAt": "2024-11-19T19:12:08.000Z",
+        "prMergedAt": "2024-11-19T19:12:08.000Z",
+        "hash": "ae489aebf792244ed63e298afa274a2541213a4812fd9d7ef8025dfbd3bf9275",
+        "prCreator": {
+          "id": "cm5ticmv400yfv9weuzlxgxlc",
+          "createdAt": "2025-01-12T11:04:23.489Z",
+          "updatedAt": "2025-01-12T16:57:41.626Z",
+          "userName": "diogogmatos",
+          "userAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+          "userUsername": "diogogmatos"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticoah0106v9we212xf3q1",
+            "name": "bug",
+            "color": "d73a4a"
+          }
+        ],
+        "prAssignees": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ],
+        "prReviewers": []
+      },
+      {
+        "id": "cm5tiu67d018av9we96yr1p4v",
+        "createdAt": "2025-01-12T11:18:01.705Z",
+        "updatedAt": "2025-01-12T16:57:35.461Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2183435670",
+        "prNumber": 268,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2024-11-17T01:39:24.000Z",
+        "prClosedAt": "2024-11-17T16:42:22.000Z",
+        "prMergedAt": "2024-11-17T16:42:22.000Z",
+        "hash": "434f6cbbccde26e5bf016713f0f8ae7b72bb1343cb15dc36c09061fb27571262",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": []
+      }
+    ]
+  },
+  {
+    "month": "October 2024",
+    "items": [
+      {
+        "id": "cm5tiu8u201bgv9we8bhbhe1y",
+        "createdAt": "2025-01-12T11:18:05.114Z",
+        "updatedAt": "2025-01-12T16:57:38.686Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2113512818",
+        "prNumber": 246,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2024-10-08T16:37:20.000Z",
+        "prClosedAt": "2024-10-08T16:49:18.000Z",
+        "prMergedAt": null,
+        "hash": "def8cb015e23462ceae0701ddc59422b910a7d3c78fd2c617f791ae00e723503",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ]
+      },
+      {
+        "id": "cm5tiu99y01c1v9we5glcj3lb",
+        "createdAt": "2025-01-12T11:18:05.686Z",
+        "updatedAt": "2025-01-12T16:57:39.252Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2113498404",
+        "prNumber": 244,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2024-10-08T16:28:01.000Z",
+        "prClosedAt": "2024-10-08T16:30:28.000Z",
+        "prMergedAt": null,
+        "hash": "5d040c0ad81051fc03b01ff916b8740be445cf81cbc85c7cd645622befc220eb",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": []
+      },
+      {
+        "id": "cm5tiua5v01d7v9we3095riam",
+        "createdAt": "2025-01-12T11:18:06.835Z",
+        "updatedAt": "2025-01-12T16:57:40.274Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2113396875",
+        "prNumber": 239,
+        "prTitle": "chore: enhance scraper workflow/action",
+        "prState": "closed",
+        "prHeadRef": "dm/scraper-workflow",
+        "prBaseRef": "master",
+        "prDescription": "…ibutors as reviewers",
+        "prCreatorId": "cm5ticmv400yfv9weuzlxgxlc",
+        "prCreatedAt": "2024-10-08T15:32:41.000Z",
+        "prClosedAt": "2024-10-08T15:51:27.000Z",
+        "prMergedAt": "2024-10-08T15:51:27.000Z",
+        "hash": "f20452ba0c6a3ce82204538be22f394a04baf314ce45d038e10608ae913fd08a",
+        "prCreator": {
+          "id": "cm5ticmv400yfv9weuzlxgxlc",
+          "createdAt": "2025-01-12T11:04:23.489Z",
+          "updatedAt": "2025-01-12T16:57:41.626Z",
+          "userName": "diogogmatos",
+          "userAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+          "userUsername": "diogogmatos"
+        },
+        "prLabel": [],
+        "prAssignees": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ],
+        "prReviewers": [
+          {
+            "id": "cm5tiu52y016wv9wezfosfjyo",
+            "assigneeOrReviewerName": "joaodiaslobo",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/30907944?v=4",
+            "assigneeOrReviewerUsername": "joaodiaslobo"
+          }
+        ]
+      },
+      {
+        "id": "cm5tiuaer01dgv9wejweu0uf2",
+        "createdAt": "2025-01-12T11:18:07.155Z",
+        "updatedAt": "2025-01-12T16:57:40.510Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2109235103",
+        "prNumber": 238,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2024-10-06T01:36:20.000Z",
+        "prClosedAt": "2024-10-08T15:15:29.000Z",
+        "prMergedAt": "2024-10-08T15:15:29.000Z",
+        "hash": "336f060f45e311261267fd8a8c4190b2bab1629d79fe3173743fb76075d23432",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": []
+      },
+      {
+        "id": "cm5tiu9gp01cav9wem85mf43y",
+        "createdAt": "2025-01-12T11:18:05.929Z",
+        "updatedAt": "2025-01-12T16:57:39.483Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2113478917",
+        "prNumber": 243,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2024-10-08T16:16:10.000Z",
+        "prClosedAt": "2024-10-08T16:26:27.000Z",
+        "prMergedAt": null,
+        "hash": "72d84ad4456bce1c9ec882c78138c58757ccde8bf3cd2a3c3d70e5e2816d2d90",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": []
+      },
+      {
+        "id": "cm5tiualr01dpv9wevxlbxz8b",
+        "createdAt": "2025-01-12T11:18:07.407Z",
+        "updatedAt": "2025-01-12T16:57:40.740Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2102472023",
+        "prNumber": 237,
+        "prTitle": "fix: scrape 'OT' shifts",
+        "prState": "closed",
+        "prHeadRef": "dg/fix_OT_shifts_scraping",
+        "prBaseRef": "master",
+        "prDescription": "PR to fix the [problem of OT shifts missing for LI4](https://github.com/cesium/calendarium/pull/236#issuecomment-2381429061)",
+        "prCreatorId": "cm5tiual501dnv9wew9ht02xx",
+        "prCreatedAt": "2024-10-02T00:01:40.000Z",
+        "prClosedAt": "2024-10-02T00:10:31.000Z",
+        "prMergedAt": "2024-10-02T00:10:31.000Z",
+        "hash": "6b1bcc6d36231d665169c3280032f16b4dd53723faae1c0ea5b285804c2661c7",
+        "prCreator": {
+          "id": "cm5tiual501dnv9wew9ht02xx",
+          "createdAt": "2025-01-12T11:18:07.385Z",
+          "updatedAt": "2025-01-12T16:57:40.723Z",
+          "userName": "Darguima",
+          "userAvatar": "https://avatars.githubusercontent.com/u/49988070?v=4",
+          "userUsername": "Darguima"
+        },
+        "prLabel": [],
+        "prAssignees": [],
+        "prReviewers": [
+          {
+            "id": "cm5tiu52y016wv9wezfosfjyo",
+            "assigneeOrReviewerName": "joaodiaslobo",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/30907944?v=4",
+            "assigneeOrReviewerUsername": "joaodiaslobo"
+          }
+        ]
+      },
+      {
+        "id": "cm5tiu74h019dv9wehisnf76i",
+        "createdAt": "2025-01-12T11:18:02.897Z",
+        "updatedAt": "2025-01-12T16:57:36.660Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2156893793",
+        "prNumber": 253,
+        "prTitle": "chore: update node to 22.11.0 LTS",
+        "prState": "closed",
+        "prHeadRef": "dm/node",
+        "prBaseRef": "master",
+        "prDescription": "",
+        "prCreatorId": "cm5ticmv400yfv9weuzlxgxlc",
+        "prCreatedAt": "2024-10-31T18:47:04.000Z",
+        "prClosedAt": "2024-10-31T19:09:14.000Z",
+        "prMergedAt": "2024-10-31T19:09:14.000Z",
+        "hash": "2a749b3d743423692dbdf310d5c1077db0ac13b3bf43abafec3351bf7ebf901b",
+        "prCreator": {
+          "id": "cm5ticmv400yfv9weuzlxgxlc",
+          "createdAt": "2025-01-12T11:04:23.489Z",
+          "updatedAt": "2025-01-12T16:57:41.626Z",
+          "userName": "diogogmatos",
+          "userAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+          "userUsername": "diogogmatos"
+        },
+        "prLabel": [],
+        "prAssignees": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ],
+        "prReviewers": []
+      },
+      {
+        "id": "cm5tiu79m019jv9wewx2vkfny",
+        "createdAt": "2025-01-12T11:18:03.082Z",
+        "updatedAt": "2025-01-12T16:57:36.795Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2147501410",
+        "prNumber": 252,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2024-10-27T01:36:22.000Z",
+        "prClosedAt": "2024-10-27T11:29:12.000Z",
+        "prMergedAt": null,
+        "hash": "285157bd25b1a0aa73024f54bf3e093b9463abab07a428b44e630c7cc06ea90d",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ]
+      },
+      {
+        "id": "cm5tiu7jb019vv9weck9yfzjk",
+        "createdAt": "2025-01-12T11:18:03.431Z",
+        "updatedAt": "2025-01-12T16:57:37.119Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2142316963",
+        "prNumber": 251,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2024-10-23T23:52:39.000Z",
+        "prClosedAt": "2024-10-23T23:58:03.000Z",
+        "prMergedAt": null,
+        "hash": "183d2dbde5f552a28bb97f139a2a247791362e784d160fdab6f39a78eb6a233f",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "month": "September 2024",
+    "items": [
+      {
+        "id": "cm5tiubc001emv9wetlfgddi5",
+        "createdAt": "2025-01-12T11:18:08.353Z",
+        "updatedAt": "2025-01-12T16:57:41.644Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2096150354",
+        "prNumber": 234,
+        "prTitle": "fix: duplicated shift",
+        "prState": "closed",
+        "prHeadRef": "dm/shifts",
+        "prBaseRef": "master",
+        "prDescription": "Fix duplicated DSS shift.\n",
+        "prCreatorId": "cm5ticmv400yfv9weuzlxgxlc",
+        "prCreatedAt": "2024-09-27T15:56:24.000Z",
+        "prClosedAt": "2024-09-27T16:05:33.000Z",
+        "prMergedAt": "2024-09-27T16:05:33.000Z",
+        "hash": "1b4b8b7e95efbd3f576c76d7a727bfe0bb13b39fd990da00ec9a75ffd054f86d",
+        "prCreator": {
+          "id": "cm5ticmv400yfv9weuzlxgxlc",
+          "createdAt": "2025-01-12T11:04:23.489Z",
+          "updatedAt": "2025-01-12T16:57:41.626Z",
+          "userName": "diogogmatos",
+          "userAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+          "userUsername": "diogogmatos"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticoah0106v9we212xf3q1",
+            "name": "bug",
+            "color": "d73a4a"
+          }
+        ],
+        "prAssignees": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ],
+        "prReviewers": []
+      },
+      {
+        "id": "cm5tiub2h01eav9weiwny7v27",
+        "createdAt": "2025-01-12T11:18:08.010Z",
+        "updatedAt": "2025-01-12T16:57:41.308Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2097330734",
+        "prNumber": 235,
+        "prTitle": "chore: update shifts data",
+        "prState": "closed",
+        "prHeadRef": "action/shifts",
+        "prBaseRef": "master",
+        "prDescription": "*This is an automated PR*\nRun Calendarium Scraper in order to update shifts data.\n> [!IMPORTANT]\n> Before merging, please be aware of edge cases where manual intervention is needed.",
+        "prCreatorId": "cm5ticmuo00yev9webdfer43f",
+        "prCreatedAt": "2024-09-29T01:36:53.000Z",
+        "prClosedAt": "2024-09-29T13:54:35.000Z",
+        "prMergedAt": "2024-09-29T13:54:35.000Z",
+        "hash": "cce1702cd1f23f02d95992fa229f2580147e58c3718b0208c301cab926b4d30a",
+        "prCreator": {
+          "id": "cm5ticmuo00yev9webdfer43f",
+          "createdAt": "2025-01-12T11:04:23.472Z",
+          "updatedAt": "2025-01-12T16:57:41.290Z",
+          "userName": "github-actions[bot]",
+          "userAvatar": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "userUsername": "github-actions[bot]"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticmwn00yiv9we79hvy56e",
+            "name": "add activities",
+            "color": "D93F0B"
+          },
+          {
+            "id": "cm5ticn1f00ylv9wew2wsrco2",
+            "name": "automated",
+            "color": "ededed"
+          }
+        ],
+        "prAssignees": [],
+        "prReviewers": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ]
+      },
+      {
+        "id": "cm5tiuapn01dvv9weebqrw1fr",
+        "createdAt": "2025-01-12T11:18:07.548Z",
+        "updatedAt": "2025-01-12T16:57:40.867Z",
+        "projectId": "cm5ticfae00xtv9wedgs9lv6b",
+        "prId": "2097685169",
+        "prNumber": 236,
+        "prTitle": "fix: re-add shifts removed by scraper",
+        "prState": "closed",
+        "prHeadRef": "dm/fix",
+        "prBaseRef": "master",
+        "prDescription": "The scraper is having problems adding the LI4 shifts to `filters.json` and is not picking up a shift for \"Sustentabilidade Ambiental, Social e Económica\". Both these problems were manually fixed in #226 and somewhere else along with other PR. However, every time the scraper runs it removes these manual changes when generating the JSON files, so we have to be aware of that from now on while the problem isn't fixed in the scraper itself.\r\n\r\n#235 was merged by @ruilopesm because he didn't know this, so I'm adding the required changes back.\r\n",
+        "prCreatorId": "cm5ticmv400yfv9weuzlxgxlc",
+        "prCreatedAt": "2024-09-29T17:04:52.000Z",
+        "prClosedAt": "2024-09-29T17:12:23.000Z",
+        "prMergedAt": "2024-09-29T17:12:23.000Z",
+        "hash": "329c02f4a23f9cd3fc98abee838ff5b99396160e4373a2a3b080ff725c7d8646",
+        "prCreator": {
+          "id": "cm5ticmv400yfv9weuzlxgxlc",
+          "createdAt": "2025-01-12T11:04:23.489Z",
+          "updatedAt": "2025-01-12T16:57:41.626Z",
+          "userName": "diogogmatos",
+          "userAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+          "userUsername": "diogogmatos"
+        },
+        "prLabel": [
+          {
+            "id": "cm5ticoah0106v9we212xf3q1",
+            "name": "bug",
+            "color": "d73a4a"
+          }
+        ],
+        "prAssignees": [
+          {
+            "id": "cm5ticn6g00ysv9weekva297z",
+            "assigneeOrReviewerName": "diogogmatos",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/80540164?v=4",
+            "assigneeOrReviewerUsername": "diogogmatos"
+          }
+        ],
+        "prReviewers": [
+          {
+            "id": "cm5tiu52y016wv9wezfosfjyo",
+            "assigneeOrReviewerName": "joaodiaslobo",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/30907944?v=4",
+            "assigneeOrReviewerUsername": "joaodiaslobo"
+          },
+          {
+            "id": "cm5tiuavs01e2v9wenbk3a63e",
+            "assigneeOrReviewerName": "Darguima",
+            "assigneeOrReviewerAvatar": "https://avatars.githubusercontent.com/u/49988070?v=4",
+            "assigneeOrReviewerUsername": "Darguima"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "month": "August 2024",
+    "items": []
+  }
+]
