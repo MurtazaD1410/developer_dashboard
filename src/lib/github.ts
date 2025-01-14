@@ -6,7 +6,7 @@ import crypto from "crypto";
 import stableStringify from "fast-json-stable-stringify";
 
 export const octokit = new Octokit({
-  auth: "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",
+  auth: process.env.GITHUB_TOKEN,
 });
 
 // ! REPOSITORY SECTION
@@ -233,13 +233,28 @@ export const pollCommits = async (projectId: string) => {
 
 async function summarizeCommit(githubUrl: string, commitHash: string) {
   // get diff and pass it to the summarize function
-  const { data } = await axios.get(`${githubUrl}/commit/${commitHash}.diff`, {
-    headers: {
-      Accept: "application/vnd.github.v3.diff",
-      Authorization: `Bearer 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`,
+  // const { data } = await axios.get(`${githubUrl}/commit/${commitHash}.diff`, {
+  //   headers: {
+  //     Accept: "application/vnd.github.v3.diff",
+  //     Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+  //   },
+  // });
+  const [owner, repo] = githubUrl.split("/").slice(-2);
+
+  if (!owner || !repo) {
+    throw new Error("Invalid GitHub Url");
+  }
+
+  const { data } = await octokit.rest.repos.getCommit({
+    owner,
+    repo,
+    ref: commitHash,
+    mediaType: {
+      format: "diff",
     },
   });
-  return (await aiSummarizeCommit(data)) || "";
+
+  return (await aiSummarizeCommit(JSON.stringify(data))) || "";
 }
 
 async function filterUnprocessedCommits(

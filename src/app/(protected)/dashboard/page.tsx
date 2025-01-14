@@ -1,7 +1,13 @@
 "use client";
 import useProject from "@/hooks/use-project";
 
-import { CircleDot, ExternalLink, Github, UnlockIcon } from "lucide-react";
+import {
+  CircleDot,
+  ExternalLink,
+  Github,
+  LockIcon,
+  UnlockIcon,
+} from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import CommitLog from "./commit-log";
@@ -9,7 +15,7 @@ import { api } from "@/trpc/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { getRelativeTime } from "@/lib/utils";
+import { cn, getRelativeTime } from "@/lib/utils";
 import { type Url } from "next/dist/shared/lib/router/router";
 import LoadingPage from "@/app/(protected)/loading";
 import ArchiveButton from "./archive-button";
@@ -68,10 +74,18 @@ const DashboardPage = () => {
               <CardTitle className="text-2xl">
                 {repository?.repoName?.toUpperCase()}
                 <Badge
-                  className="mx-4 gap-x-2 rounded-full bg-green-500 p-1 px-2"
+                  className={cn(
+                    "mx-4 gap-x-2 rounded-full p-1 px-2",
+                    repository?.repoPrivate ? "bg-red-500" : "bg-green-500",
+                  )}
                   variant={"default"}
                 >
-                  <UnlockIcon size={16} />
+                  {repository?.repoPrivate ? (
+                    <LockIcon size={16} />
+                  ) : (
+                    <UnlockIcon size={16} />
+                  )}
+
                   {repository?.repoPrivate ? "Private" : "Public"}
                 </Badge>
               </CardTitle>
