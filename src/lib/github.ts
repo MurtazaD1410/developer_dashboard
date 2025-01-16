@@ -6,7 +6,8 @@ import crypto from "crypto";
 import stableStringify from "fast-json-stable-stringify";
 
 export const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
+  // auth: process.env.GITHUB_TOKEN,
+  auth: "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",
 });
 
 // ! REPOSITORY SECTION
@@ -839,5 +840,3 @@ export const filterUnprocessedPrs = async (
 
   return unprocessedIssues;
 };
-
-pollPrs("cm5srbjqp000077yqtawsxbv3");

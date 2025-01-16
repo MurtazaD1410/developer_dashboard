@@ -7,7 +7,7 @@ export interface GitHubUserProfile {
   userUsername?: string | null;
 }
 
-interface Label {
+export interface Label {
   id?: string | null;
   name?: string | null;
   color?: string | null;
@@ -18,6 +18,12 @@ export interface AssigneeOrReviewer {
   assigneeOrReviewerName?: string | null;
   assigneeOrReviewerAvatar?: string | null;
   assigneeOrReviewerUsername?: string | null;
+}
+
+export enum UserTier {
+  basic = "basic",
+  pro = "pro",
+  premium = "premium",
 }
 
 export interface Project {

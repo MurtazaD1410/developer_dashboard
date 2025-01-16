@@ -97,6 +97,9 @@ const IssuesSummaryPieChart = ({
         <CardDescription>{`${groupedIssues?.[5]?.month} - ${groupedIssues?.[0]?.month}`}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
+        {!chartData.length && (
+          <div>No data available for the selected timeframe.</div>
+        )}
         <ChartContainer config={chartConfig}>
           <PieChart>
             <ChartTooltip

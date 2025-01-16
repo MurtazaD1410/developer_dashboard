@@ -22,7 +22,7 @@ const InviteButton = () => {
           <DialogHeader>
             <DialogTitle>Invite Team Members</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-secondary-foreground/80">
             Ask them copy and paste this link
           </p>
           <Input

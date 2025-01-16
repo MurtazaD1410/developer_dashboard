@@ -69,7 +69,7 @@ const CommitLog = () => {
                   "absolute left-0 top-0 flex w-6 justify-center",
                 )}
               >
-                <div className="w-px translate-x-1 bg-gray-200"></div>
+                <div className="w-px translate-x-1 bg-secondary-foreground/30"></div>
               </div>
               <>
                 <img
@@ -77,21 +77,21 @@ const CommitLog = () => {
                   alt=""
                   className="relative mt-4 size-8 flex-none rounded-full bg-gray-50"
                 />
-                <div className="flex-auto rounded-md bg-white p-3 ring-1 ring-inset ring-gray-200">
+                <div className="flex-auto rounded-md bg-secondary p-3 ring-1 ring-inset ring-secondary-foreground/30">
                   <div className="flex justify-between gap-x-4">
                     <Link
-                      className="py-0.5 text-xs leading-5 text-gray-500"
+                      className="py-0.5 text-xs leading-5 text-secondary-foreground"
                       target="_blank"
                       href={`${project?.githubUrl}/commits/${commit.commitHash}`}
                     >
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-secondary-foreground">
                         {commit.commitAuthorName}
                       </span>{" "}
                       <span className="inline-flex items-center">
                         committed <ExternalLink className="ml-1 size-4" />
                       </span>
                     </Link>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-secondary-foreground">
                       <span className="inline-flex items-center gap-x-1">
                         <Timer className="ml-1 size-4" /> Committed{" "}
                         {formatRelativeDate(commit.commitDate)}
@@ -101,7 +101,7 @@ const CommitLog = () => {
                   <span className="font-semibold">
                     <HighlightBackticks text={commit.commitMessage} />
                   </span>
-                  <pre className="mt-2 whitespace-pre-wrap text-sm leading-6 text-gray-500">
+                  <pre className="mt-2 whitespace-pre-wrap text-sm leading-6 text-secondary-foreground/80">
                     <HighlightBackticks text={commit.summary} isDesc />
                   </pre>
                 </div>

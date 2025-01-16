@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -46,6 +46,9 @@ const prepareChartData = (
 };
 
 const chartConfig = {
+  items: {
+    label: "Issues",
+  },
   issue: {
     label: "Issues",
     color: "hsl(var(--chart-1))",
@@ -60,7 +63,7 @@ interface MonthlyIssueChartProps {
   currentTab: string;
 }
 
-const MonthlyIssuesChart = ({
+const MonthlyIssuesAreaChart = ({
   groupedIssues,
   currentTab,
 }: MonthlyIssueChartProps) => {
@@ -70,12 +73,15 @@ const MonthlyIssuesChart = ({
   return (
     <Card className="rounded-md">
       <CardHeader>
-        <CardTitle>Bar Chart - Issues</CardTitle>
+        <CardTitle>Area Chart - Issues</CardTitle>
         <CardDescription>{`${chartData?.[0]?.month} - ${chartData?.[5]?.month}`}</CardDescription>
       </CardHeader>
       <CardContent className="">
+        {!chartData.length && (
+          <div>No data available for the selected timeframe.</div>
+        )}
         <ChartContainer config={chartConfig}>
-          <BarChart
+          <AreaChart
             accessibilityLayer
             data={chartData}
             margin={{
@@ -83,26 +89,35 @@ const MonthlyIssuesChart = ({
             }}
           >
             <CartesianGrid vertical={false} />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickCount={5}
+              domain={["auto", "dataMax + 2"]}
+            />
             <XAxis
               dataKey="month"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) =>
+                new Date(value).toLocaleString("en-US", { month: "short" })
+              }
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent indicator="line" />}
             />
-            <Bar dataKey="items" fill="var(--color-issue)" radius={4}>
-              {/* <LabelList
-                position="insideTopRight"
-                offset={12}
-                className="fill-foreground"
-                fontSize={12}
-              /> */}
-            </Bar>
-          </BarChart>
+            <Area
+              dataKey="items"
+              type="natural"
+              fill="var(--color-issue)"
+              fillOpacity={0.4}
+              stroke="var(--color-issue)"
+              stackId="a"
+            />
+          </AreaChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
@@ -122,4 +137,4 @@ const MonthlyIssuesChart = ({
   );
 };
 
-export default MonthlyIssuesChart;
+export default MonthlyIssuesAreaChart;

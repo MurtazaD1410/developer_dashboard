@@ -1,7 +1,15 @@
 "use client";
 
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  AreaChart,
+  Area,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import {
   Card,
@@ -102,7 +110,7 @@ interface MonthlyIssueChartProps {
   currentTab: string;
 }
 
-const MonthlyPrsChart = ({
+const MonthlyPrsAreaChart = ({
   groupedPrs,
   currentTab,
 }: MonthlyIssueChartProps) => {
@@ -115,8 +123,11 @@ const MonthlyPrsChart = ({
         <CardDescription>{`${chartData?.[5]?.month} - ${chartData?.[0]?.month}`}</CardDescription>
       </CardHeader>
       <CardContent>
+        {!chartData?.length && (
+          <div>No data available for the selected timeframe.</div>
+        )}
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
+          {/* <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
@@ -132,7 +143,53 @@ const MonthlyPrsChart = ({
             <Bar dataKey="created" fill="var(--color-created)" radius={4} />
             <Bar dataKey="merged" fill="var(--color-merged)" radius={4} />
             <Bar dataKey="closed" fill="var(--color-closed)" radius={4} />
-          </BarChart>
+          </BarChart> */}
+
+          <AreaChart accessibilityLayer data={chartData}>
+            <CartesianGrid vertical={false} />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickCount={5}
+              domain={["auto", "dataMax + 2"]}
+            />
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="line" />}
+            />
+            <Area
+              dataKey="created"
+              type="natural"
+              fill="var(--color-created)"
+              fillOpacity={0.4}
+              stroke="var(--color-created)"
+              stackId="a"
+            />
+            <Area
+              dataKey="closed"
+              type="natural"
+              fill="var(--color-closed)"
+              fillOpacity={0.4}
+              stroke="var(--color-closed)"
+              stackId="a"
+            />
+            <Area
+              dataKey="merged"
+              type="natural"
+              fill="var(--color-merged)"
+              fillOpacity={0.4}
+              stroke="var(--color-merged)"
+              stackId="a"
+            />
+          </AreaChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
@@ -147,4 +204,4 @@ const MonthlyPrsChart = ({
   );
 };
 
-export default MonthlyPrsChart;
+export default MonthlyPrsAreaChart;

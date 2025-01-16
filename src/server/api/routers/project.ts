@@ -8,6 +8,7 @@ import {
   type GitHubPullRequest,
   type Project,
 } from "@/types/types";
+import { checkCredits } from "@/lib/github-loader";
 // import { indexGithubRepo } from "@/lib/github-loader";
 
 export const projectRouter = createTRPCRouter({
@@ -21,6 +22,33 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }): Promise<Project> => {
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.user.userId! },
+        select: {
+          tier: true,
+          userToProject: {
+            where: { userId: ctx.user.userId! },
+          },
+        },
+      });
+
+      if ((user?.userToProject.length ?? 0) >= 3 && user?.tier === "basic") {
+        throw new Error("Please upgrade your plan to add more projects");
+      }
+      if ((user?.userToProject.length ?? 0) >= 5 && user?.tier === "pro") {
+        throw new Error("Please upgrade your plan to add more projects");
+      }
+      if ((user?.userToProject.length ?? 0) >= 10 && user?.tier === "premium") {
+        throw new Error("Please upgrade your plan to add more projects");
+      }
+
+      // const currentCredits = userProjects.  || 0;
+
+      // const fileCount = await checkCredits(input.githubUrl, input.githubToken);
+      // if (fileCount > currentCredits) {
+      //   throw new Error("Insufficient credits");
+      // }
+
       const project = await ctx.db.project.create({
         data: {
           name: input.name,
@@ -28,6 +56,7 @@ export const projectRouter = createTRPCRouter({
           userToProject: {
             create: {
               userId: ctx.user.userId!,
+              role: "ADMIN",
             },
           },
         },
@@ -36,6 +65,11 @@ export const projectRouter = createTRPCRouter({
       await pollRepository(project.id);
       await pollCommits(project.id);
       await pollIssues(project.id);
+      await pollPrs(project.id);
+      // await ctx.db.user.update({
+      //   where: { id: ctx.user.userId! },
+      //   data: { credits: { decrement: fileCount } },
+      // });
       return project;
     }),
 
@@ -59,6 +93,22 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }): Promise<Project> => {
+      const userRole = await ctx.db.userToProject.findUnique({
+        where: {
+          projectId_userId: {
+            projectId: input.projectId,
+            userId: ctx.user.userId!,
+          },
+        },
+        select: {
+          role: true,
+        },
+      });
+
+      if (userRole?.role !== "ADMIN") {
+        throw new Error("Unauthorized");
+      }
+
       const project = await ctx.db.project.update({
         where: { id: input.projectId },
         data: {
@@ -66,9 +116,6 @@ export const projectRouter = createTRPCRouter({
         },
       });
       // await indexGithubRepo(project.id, input.githubUrl, input.githubToken);
-      await pollRepository(project.id);
-      await pollCommits(project.id);
-      await pollIssues(project.id);
       return project;
     }),
 
@@ -154,7 +201,7 @@ export const projectRouter = createTRPCRouter({
           },
           issueToAssignedUser: {
             include: {
-              issueAssignee: true,
+              issueAssignee: {},
             },
           },
           issueLabel: {
@@ -167,7 +214,7 @@ export const projectRouter = createTRPCRouter({
 
       const formattedIssues = issues.map((issue) => ({
         ...issue,
-        issueAssigned: issue.issueToAssignedUser.map((item) => ({
+        issueAssignees: issue.issueToAssignedUser.map((item) => ({
           id: item.issueAssignee?.id,
           assigneeOrReviewerName: item.issueAssignee?.userName,
           assigneeOrReviewerAvatar: item.issueAssignee?.userAvatar,
@@ -258,4 +305,18 @@ export const projectRouter = createTRPCRouter({
       },
     });
   }),
+
+  checkCredits: protectedProcedure
+    .input(
+      z.object({ gihtubUrl: z.string(), githubToken: z.string().optional() }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const fileCount = await checkCredits(input.gihtubUrl, input.githubToken);
+      const userCredits = await ctx.db.user.findUnique({
+        where: { id: ctx.user.userId! },
+        select: { credits: true },
+      });
+
+      return { fileCount, userCredits: userCredits?.credits || 0 };
+    }),
 });

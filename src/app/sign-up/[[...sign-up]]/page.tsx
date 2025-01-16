@@ -1,5 +1,5 @@
 import React from "react";
-import { SignIn } from "@clerk/nextjs";
+import { SignUp } from "@clerk/nextjs";
 import { BarChartHorizontal, LineChart, GitCommit, Users } from "lucide-react";
 
 const SignInPage = () => {
@@ -15,7 +15,7 @@ const SignInPage = () => {
         </div>
 
         <div className="w-full max-w-sm">
-          <SignIn
+          <SignUp
             appearance={{
               elements: {
                 formButtonPrimary:
@@ -41,6 +41,7 @@ const SignInPage = () => {
         </div>
       </div>
 
+      {/* Right side - Info Panel */}
       <div className="hidden w-1/2 flex-col justify-center bg-secondary/50 px-12 lg:flex">
         <div className="max-w-lg">
           <h1 className="mb-4 text-3xl font-bold">

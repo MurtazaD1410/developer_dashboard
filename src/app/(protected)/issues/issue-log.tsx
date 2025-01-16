@@ -152,7 +152,7 @@ const TabCustomContent = ({
                   <div className="flex items-center gap-x-3">
                     <HighlightBackticks text={issue.issueTitle} />{" "}
                     <Link
-                      className="py-0.5 text-xs leading-5 text-gray-500"
+                      className="py-0.5 text-xs leading-5 text-secondary-foreground"
                       target="_blank"
                       href={`${project?.githubUrl}/issues/${issue.issueNumber}`}
                     >
@@ -189,7 +189,7 @@ const TabCustomContent = ({
                       </Badge>
                     )}
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-secondary-foreground">
                     <span className="inline-flex items-center gap-x-1">
                       <Timer className="ml-1 size-4" /> Issue created{" "}
                       {formatRelativeDate(issue.issueCreatedAt)}
@@ -225,7 +225,7 @@ const TabCustomContent = ({
                     target="_blank"
                     href={`https://github.com/${issue.issueCloser?.userUsername}`}
                   >
-                    <span className="inline-flex items-center">
+                    <span className="inline-flex items-center text-secondary-foreground">
                       Issue closed by <ExternalLink className="ml-1 size-4" />
                     </span>
                   </Link>
@@ -249,7 +249,7 @@ const TabCustomContent = ({
             {(issue.issueDescription ||
               (issue.issueAssignees?.length ?? 0) > 0) && (
               <CardContent>
-                <CardDescription className="text-justify">
+                <CardDescription className="text-justify text-secondary-foreground/80">
                   <HighlightBackticks
                     text={issue.issueDescription ?? ""}
                     isDesc
@@ -257,7 +257,7 @@ const TabCustomContent = ({
                 </CardDescription>
                 {(issue.issueAssignees?.length ?? 0) > 0 && (
                   <div className="mt-2 inline-flex items-center gap-x-2">
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-secondary-foreground/70">
                       This issue has been assigned to
                     </p>
                     <AvatarGroup limit={3} users={issue.issueAssignees} />

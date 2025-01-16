@@ -9,7 +9,7 @@ import {
   UnlockIcon,
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import CommitLog from "./commit-log";
 import { api } from "@/trpc/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,19 +20,26 @@ import { type Url } from "next/dist/shared/lib/router/router";
 import LoadingPage from "@/app/(protected)/loading";
 import ArchiveButton from "./archive-button";
 import InviteButton from "./invite-button";
-import TeamMembers from "./team-memers";
+import TeamMembers from "./team-members";
+import useRefetch from "@/hooks/use-refetch";
 
 const DashboardPage = () => {
-  const { project, projectId, isLoading, isError, projects } = useProject();
+  const { project, projectId, isLoading, isError } = useProject();
+  const refetch = useRefetch();
   const { data: repository } = api.project.getRepository.useQuery({
     projectId,
   });
+  const { data: userRole } = api.user.getUserRole.useQuery({ projectId });
 
   if (isLoading) <LoadingPage />;
 
   if (!isLoading && !project) {
     return <div className="">No Projects Found</div>;
   }
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   if (isError) {
     throw new Error("Error fetching product");
@@ -64,7 +71,7 @@ const DashboardPage = () => {
           <div className="flex items-center gap-4">
             <TeamMembers />
             <InviteButton />
-            <ArchiveButton />
+            {userRole?.role === "ADMIN" && <ArchiveButton />}
           </div>
         </div>
 
@@ -121,8 +128,8 @@ const DashboardPage = () => {
                 })}
             </div>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="flex flex-col items-center justify-between space-y-5">
+          <CardContent className="grid grid-cols-1 lg:grid-cols-3">
+            <div className="flex flex-col items-center justify-between space-y-5 pb-10 lg:pb-0">
               <h1 className="text-lg font-semibold text-muted-foreground">
                 Repository Owner
               </h1>
@@ -130,7 +137,7 @@ const DashboardPage = () => {
                 href={`https://github.com/${repository?.repoOwner.userUsername}`}
                 className="cursor-pointer"
               >
-                <Avatar className="size-32 border border-gray-300">
+                <Avatar className="size-32 border border-none">
                   <AvatarImage
                     src={repository?.repoOwner.userAvatar ?? undefined}
                   />
@@ -142,7 +149,7 @@ const DashboardPage = () => {
                     repository?.repoOwner.userUsername.slice(1)}
               </p>
             </div>
-            <div className="flex flex-col items-center justify-between space-y-5 border-l-2 border-r-2">
+            <div className="flex flex-col items-center justify-between space-y-5 border-b-2 border-t-2 py-10 lg:border-b-0 lg:border-l-2 lg:border-r-2 lg:border-t-0 lg:p-0">
               <h1 className="text-lg font-semibold text-muted-foreground">
                 Open Issues
               </h1>
@@ -157,11 +164,11 @@ const DashboardPage = () => {
                 <CircleDot size={20} />
               </Link>
             </div>
-            <div className="flex flex-col items-center justify-between space-y-5">
+            <div className="flex flex-col items-center justify-between space-y-5 pt-10 lg:pt-0">
               <h1 className="text-lg font-semibold text-muted-foreground">
                 Repository created
               </h1>
-              <p className="cursor-pointer text-6xl">
+              <p className="cursor-pointer text-center text-6xl">
                 {repository?.repoCreatedAt &&
                   getRelativeTime(repository?.repoCreatedAt)}
               </p>

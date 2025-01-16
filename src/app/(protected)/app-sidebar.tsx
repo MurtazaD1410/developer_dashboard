@@ -16,11 +16,13 @@ import {
 import useProject from "@/hooks/use-project";
 import { cn } from "@/lib/utils";
 import {
+  BarChartHorizontal,
   BugIcon,
   CreditCard,
   GitPullRequest,
   LayoutDashboard,
   Plus,
+  UsersIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -43,6 +45,11 @@ const items = [
     icon: GitPullRequest,
   },
   {
+    title: "Team Members",
+    url: "/members",
+    icon: UsersIcon,
+  },
+  {
     title: "Billing",
     url: "/billing",
     icon: CreditCard,
@@ -58,10 +65,8 @@ export function AppSideBar() {
     <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader>
         <div className="flex items-center gap-2">
-          <Image src={"/logo.png"} width={40} height={40} alt="Logo" />
-          {open && (
-            <h1 className="text-xl font-bold text-primary/80">DevDash</h1>
-          )}
+          <BarChartHorizontal className="size-10 text-primary" />
+          {open && <h1 className="text-xl font-bold text-primary">DevDash</h1>}
         </div>
       </SidebarHeader>
       <SidebarContent>

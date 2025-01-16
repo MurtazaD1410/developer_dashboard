@@ -194,7 +194,7 @@ const TabCustomContent = ({ prs, project, tabName }: TabCustomContentProps) => {
       {sortedPrs?.map((pr) => (
         <div className="mb-5" key={pr.id}>
           <Card
-            className="rounded-md transition-colors hover:bg-slate-50"
+            className="rounded-md transition-colors hover:bg-secondary"
             onClick={() => {
               window.open(
                 `${project?.githubUrl}/pull/${pr.prNumber}`,
@@ -211,12 +211,12 @@ const TabCustomContent = ({ prs, project, tabName }: TabCustomContentProps) => {
                   <div>
                     <CardTitle className="flex items-center gap-2 text-base font-medium">
                       <HighlightBackticks text={pr.prTitle} />
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-secondary-foreground">
                         #{pr.prNumber}
                       </span>
                     </CardTitle>
 
-                    <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-500">
+                    <div className="mt-2 flex flex-wrap gap-4 text-sm text-secondary-foreground/70">
                       <div className="flex items-center">
                         <Clock className="mr-1 h-4 w-4" />
                         Created: {formatDate(pr.prCreatedAt.toDateString())}
@@ -255,7 +255,7 @@ const TabCustomContent = ({ prs, project, tabName }: TabCustomContentProps) => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="flex flex-col gap-y-2">
+            <CardContent className="flex flex-col gap-y-2 text-secondary-foreground/80">
               {pr.prDescription && (
                 <CardDescription>
                   <HighlightBackticks text={pr.prDescription} isDesc />
@@ -284,12 +284,12 @@ const TabCustomContent = ({ prs, project, tabName }: TabCustomContentProps) => {
                   )}
                 </div>
               )}
-              <div className="flex flex-wrap gap-4 text-sm">
+              <div className="flex flex-wrap gap-4 text-sm text-secondary-foreground/60">
                 <div className="flex items-center gap-2">
-                  <GitPullRequest className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-600">{pr.prHeadRef}</span>
-                  <ArrowRight className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">{pr.prBaseRef}</span>
+                  <GitPullRequest className="h-4 w-4" />
+                  <span className="">{pr.prHeadRef}</span>
+                  <ArrowRight className="h-4 w-4" />
+                  <span className="">{pr.prBaseRef}</span>
                 </div>
               </div>
             </CardContent>

@@ -7,7 +7,8 @@ import PrLog from "./pr-log";
 import LoadingPage from "@/app/(protected)/loading";
 import { type GitHubPullRequest } from "@/types/types";
 import { groupPrsByLastSixMonths } from "./helper/group-prs-last-six-months";
-import MonthlyPrsChart from "./monthly-chart";
+import MonthlyPrsAreaChart from "./monthly-area-chart";
+import PrLabelsBarChart from "./labels-bar-chart";
 
 const PullRequestsPage = () => {
   const { projectId, isLoading, isError } = useProject();
@@ -34,9 +35,15 @@ const PullRequestsPage = () => {
     groupedPrs && (
       <div className="flex flex-col gap-5">
         <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2">
-          <MonthlyPrsChart
+          <MonthlyPrsAreaChart
             groupedPrs={groupedPrs}
             currentTab={chartDataTabName}
+          />
+          <PrLabelsBarChart
+            prs={prs}
+            currentTab={chartDataTabName}
+            startMonth={groupedPrs[5]?.month ?? ""}
+            endMonth={groupedPrs[0]?.month ?? ""}
           />
         </div>
         <PrLog

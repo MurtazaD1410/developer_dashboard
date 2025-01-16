@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import React from "react";
 
 interface HighlightBackticksProps {
@@ -17,10 +18,14 @@ const HighlightBackticks: React.FC<HighlightBackticksProps> = ({
         if (part.startsWith("`") && part.endsWith("`")) {
           return (
             <code
+              className={cn(
+                "bg-secondary-darker",
+                isDesc
+                  ? "text-secondary-foreground/70"
+                  : "text-secondary-foreground/90",
+              )}
               key={index}
               style={{
-                backgroundColor: "#f0f0f0",
-                color: isDesc ? "#36454F" : "#d73a49",
                 padding: "2px 4px",
                 borderRadius: "4px",
               }}
