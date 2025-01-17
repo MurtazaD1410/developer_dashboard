@@ -26,28 +26,31 @@ export const projectRouter = createTRPCRouter({
         where: { id: ctx.user.userId! },
         select: {
           tier: true,
-          userToProject: {
-            where: { userId: ctx.user.userId! },
-          },
         },
       });
 
-      if ((user?.userToProject.length ?? 0) >= 3 && user?.tier === "basic") {
-        throw new Error("Please upgrade your plan to add more projects");
-      }
-      if ((user?.userToProject.length ?? 0) >= 5 && user?.tier === "pro") {
-        throw new Error("Please upgrade your plan to add more projects");
-      }
-      if ((user?.userToProject.length ?? 0) >= 10 && user?.tier === "premium") {
-        throw new Error("Please upgrade your plan to add more projects");
-      }
+      const projects = await ctx.db.project.findMany({
+        where: {
+          userToProject: {
+            some: {
+              userId: ctx.user.userId!,
+            },
+          },
+          deletedAt: null,
+        },
+      });
 
-      // const currentCredits = userProjects.  || 0;
+      console.log(projects);
 
-      // const fileCount = await checkCredits(input.githubUrl, input.githubToken);
-      // if (fileCount > currentCredits) {
-      //   throw new Error("Insufficient credits");
-      // }
+      if ((projects.length ?? 0) >= 3 && user?.tier === "basic") {
+        throw new Error("Please upgrade your plan to add more projects");
+      }
+      if ((projects.length ?? 0) >= 5 && user?.tier === "pro") {
+        throw new Error("Please upgrade your plan to add more projects");
+      }
+      if ((projects.length ?? 0) >= 10 && user?.tier === "premium") {
+        throw new Error("Please upgrade your plan to add more projects");
+      }
 
       const project = await ctx.db.project.create({
         data: {
@@ -61,15 +64,12 @@ export const projectRouter = createTRPCRouter({
           },
         },
       });
-      // await indexGithubRepo(project.id, input.githubUrl, input.githubToken);
+
       await pollRepository(project.id);
       await pollCommits(project.id);
       await pollIssues(project.id);
       await pollPrs(project.id);
-      // await ctx.db.user.update({
-      //   where: { id: ctx.user.userId! },
-      //   data: { credits: { decrement: fileCount } },
-      // });
+
       return project;
     }),
 
