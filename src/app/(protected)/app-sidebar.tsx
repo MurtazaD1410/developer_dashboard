@@ -24,34 +24,33 @@ import {
   Plus,
   UsersIcon,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const items = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: "dashboard",
     icon: LayoutDashboard,
   },
   {
     title: "Issues",
-    url: "/issues",
+    url: "issues",
     icon: BugIcon,
   },
   {
     title: "Pull Requests",
-    url: "/pull-requests",
+    url: "pull-requests",
     icon: GitPullRequest,
   },
   {
     title: "Team Members",
-    url: "/members",
+    url: "members",
     icon: UsersIcon,
   },
   {
     title: "Billing",
-    url: "/billing",
+    url: "billing",
     icon: CreditCard,
   },
 ];
@@ -78,10 +77,18 @@ export function AppSideBar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link
-                      href={item.url}
+                      href={
+                        item.url === "billing"
+                          ? "/billing"
+                          : `/projects/${projectId}/${item.url}`
+                      }
                       className={cn(
                         {
-                          "!bg-primary !text-white": pathname === item.url,
+                          "!bg-primary !text-white":
+                            item.url === "billing"
+                              ? pathname === "/billing"
+                              : pathname ===
+                                `/projects/${projectId}/${item.url}`,
                         },
                         "list-none",
                       )}

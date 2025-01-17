@@ -1,14 +1,23 @@
 import { api } from "@/trpc/react";
-import { useLocalStorage } from "usehooks-ts";
+import { useParams, useRouter } from "next/navigation";
 
 const useProject = () => {
+  const params = useParams();
+  const router = useRouter();
+
   const {
     data: projects,
     isLoading,
     isError,
   } = api.project.getProjects.useQuery();
-  const [projectId, setProjectId] = useLocalStorage("devDash-project-id", "");
+
+  const projectId = params?.projectId as string;
+
   const project = projects?.find((project) => project.id === projectId);
+
+  const setProjectId = (newProjectId: string) => {
+    router.push(`/projects/${newProjectId}/dashboard`);
+  };
 
   return { projects, project, projectId, setProjectId, isLoading, isError };
 };

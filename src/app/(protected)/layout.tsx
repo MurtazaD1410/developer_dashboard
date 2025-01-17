@@ -1,8 +1,12 @@
+"use client";
+
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { UserButton } from "@clerk/nextjs";
 import React from "react";
 import { AppSideBar } from "./app-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
+import useProject from "@/hooks/use-project";
+import { useParams, usePathname, redirect } from "next/navigation";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -14,6 +18,52 @@ const Sidebar = ({ children }: SidebarProps) => {
       userButtonAvatarBox: "w-12 h-12",
     },
   };
+  const { projects, isLoading } = useProject();
+  const params = useParams();
+  const pathname = usePathname();
+  const projectId = params?.projectId as string;
+
+  const noProjectRequiredRoutes = ["/create", "/pricing", "/sync-user", "/"];
+
+  // Handle initial routing
+  React.useEffect(() => {
+    // Skip redirect logic if we're on a route that doesn't need a project
+    if (noProjectRequiredRoutes.some((route) => pathname.startsWith(route))) {
+      return;
+    }
+
+    if (!isLoading && projects?.length && projects?.length > 0) {
+      // If we're in a project route but project doesn't exist
+      if (projectId && !projects.find((p) => p.id === projectId)) {
+        redirect(`/projects/${projects[0]!.id}/dashboard`);
+      }
+
+      // If we're in a protected route that needs a project but no project is selected
+      const needsProject =
+        pathname.startsWith("/projects/") ||
+        pathname === "/dashboard" ||
+        pathname === "/issues" ||
+        pathname === "/pull-requests";
+
+      if (needsProject && !projectId) {
+        redirect(`/projects/${projects[0]!.id}/dashboard`);
+      }
+    }
+
+    // Only redirect to create if we're not already on the create page
+    if (
+      !isLoading &&
+      projects?.length === 0 &&
+      !pathname.startsWith("/create")
+    ) {
+      redirect("/create");
+    }
+  }, [isLoading, projects, projectId, pathname]);
+
+  // Show loading state while checking projects
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <SidebarProvider>
