@@ -109,24 +109,43 @@ export function AppSideBar() {
               {projects?.map((project) => (
                 <SidebarMenuItem key={project.name}>
                   <SidebarMenuButton asChild>
-                    <div
-                      className=""
-                      onClick={() => {
-                        setProjectId(project.id);
-                      }}
-                    >
-                      <div
+                    {!open ? (
+                      <Button
+                        size={"sm"}
+                        variant={"outline"}
+                        onClick={() => {
+                          setProjectId(project.id);
+                        }}
                         className={cn(
-                          "flex size-6 items-center justify-center rounded-md border bg-white text-sm text-primary",
+                          "flex size-6 items-center justify-center rounded-md border bg-white text-sm text-primary hover:bg-secondary hover:text-primary",
                           {
-                            "bg-primary text-white": projectId === project.id,
+                            "bg-primary text-white hover:bg-primary hover:text-white":
+                              projectId === project.id,
                           },
                         )}
                       >
                         {project.name[0]}
+                      </Button>
+                    ) : (
+                      <div
+                        className=""
+                        onClick={() => {
+                          setProjectId(project.id);
+                        }}
+                      >
+                        <div
+                          className={cn(
+                            "flex size-6 items-center justify-center rounded-md border bg-white text-sm text-primary",
+                            {
+                              "bg-primary text-white": projectId === project.id,
+                            },
+                          )}
+                        >
+                          {project.name[0]}
+                        </div>
+                        <span> {project.name}</span>
                       </div>
-                      {open && <span> {project.name}</span>}
-                    </div>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -140,11 +159,7 @@ export function AppSideBar() {
                     </Button>
                   )}
                   {!open && (
-                    <Button
-                      size={"sm"}
-                      variant={"outline"}
-                      className="w-fit px-2"
-                    >
+                    <Button size={"sm"} variant={"outline"} className="w-8">
                       <Plus />
                     </Button>
                   )}
