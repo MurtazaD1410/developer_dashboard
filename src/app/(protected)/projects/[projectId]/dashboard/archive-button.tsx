@@ -3,15 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import useProject from "@/hooks/use-project";
-import useRefetch from "@/hooks/use-refetch";
 import { api } from "@/trpc/react";
-import { redirect } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 
 const ArchiveButton = () => {
   const { projectId } = useProject();
-  const refetch = useRefetch();
   const archiveProject = api.project.archiveProject.useMutation();
   const { data: userRole } = api.user.getUserRole.useQuery({ projectId });
 
