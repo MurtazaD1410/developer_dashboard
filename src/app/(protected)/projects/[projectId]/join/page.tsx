@@ -38,7 +38,7 @@ const JoinHandler = async ({ params }: JoinHandlerProps) => {
     },
   });
 
-  if (!project) return redirect("/dashboard");
+  if (!project) return redirect("/projects");
 
   try {
     await db.userToProject.create({
@@ -51,7 +51,7 @@ const JoinHandler = async ({ params }: JoinHandlerProps) => {
     console.log("user already in project");
   }
 
-  return redirect(`/dashboard`);
+  return redirect(`/projects/${projectId}/dashboard`);
 };
 
 export default JoinHandler;

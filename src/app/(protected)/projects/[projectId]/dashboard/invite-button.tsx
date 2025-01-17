@@ -30,11 +30,11 @@ const InviteButton = () => {
             className="mt-4"
             onClick={() => {
               navigator.clipboard.writeText(
-                `${window.location.origin}/join/${projectId}`,
+                `${window.location.origin}/projects/${projectId}/join`,
               );
               toast.success("copied to clipboard");
             }}
-            value={`${window.location.origin}/join/${projectId}`}
+            value={`${window.location.origin}/projects/${projectId}/join`}
           />
         </DialogContent>
       </Dialog>
