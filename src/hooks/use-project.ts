@@ -11,9 +11,12 @@ const useProject = () => {
     isError,
   } = api.project.getProjects.useQuery();
 
-  const projectId = params?.projectId as string;
+  var projectId = params?.projectId as string;
 
   const project = projects?.find((project) => project.id === projectId);
+  if (!projectId) {
+    projectId = projects?.[0]?.id ?? "";
+  }
 
   const setProjectId = (newProjectId: string) => {
     router.push(`/projects/${newProjectId}/dashboard`);

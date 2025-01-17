@@ -1,10 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import useProject from "@/hooks/use-project";
 import useRefetch from "@/hooks/use-refetch";
 import { api } from "@/trpc/react";
 import { Info, Loader } from "lucide-react";
 import Image from "next/image";
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -16,22 +18,23 @@ type FormInput = {
   githubToken?: string;
 };
 
-const CreatePage = () => {
+const CreatePageClient = () => {
   const { register, handleSubmit, reset } = useForm<FormInput>();
+  const { projects } = useProject();
   const createProject = api.project.createProject.useMutation();
   const { data: user } = api.user.getUser.useQuery();
   const refetch = useRefetch();
 
   function onSubmit(data: FormInput) {
-    if (user?.tier === "basic" && user.userToProject.length >= 3) {
+    if (user?.tier === "basic" && (projects?.length ?? 0) >= 3) {
       toast.error("Please upgrade plan to create more projects!");
       return;
     }
-    if (user?.tier === "pro" && user.userToProject.length >= 5) {
+    if (user?.tier === "pro" && (projects?.length ?? 0) >= 5) {
       toast.error("Please upgrade plan to create more projects!");
       return;
     }
-    if (user?.tier === "premium" && user.userToProject.length >= 10) {
+    if (user?.tier === "premium" && (projects?.length ?? 0) >= 10) {
       toast.error("Please upgrade plan to create more projects!");
       return;
     }
@@ -44,10 +47,10 @@ const CreatePage = () => {
         githubToken: data.githubToken,
       },
       {
-        onSuccess: () => {
+        onSuccess: ({ id }) => {
           toast.success("Project created successfully!");
           refetch();
-          reset();
+          window.location.href = `/projects/${id}/dashboard`;
         },
         onError: (e) => {
           toast.error(e.message ?? "Failed to create project!");
@@ -58,13 +61,13 @@ const CreatePage = () => {
   }
 
   const canCreateProject = () => {
-    if (user?.tier === "basic" && user.userToProject.length >= 3) {
+    if (user?.tier === "basic" && (projects?.length ?? 0) >= 3) {
       return false;
     }
-    if (user?.tier === "pro" && user.userToProject.length >= 5) {
+    if (user?.tier === "pro" && (projects?.length ?? 0) >= 5) {
       return false;
     }
-    if (user?.tier === "premium" && user.userToProject.length >= 10) {
+    if (user?.tier === "premium" && (projects?.length ?? 0) >= 10) {
       return false;
     }
 
@@ -73,13 +76,13 @@ const CreatePage = () => {
 
   const remainingLimit = () => {
     if (user?.tier === "basic") {
-      return 3 - user.userToProject.length;
+      return 3 - (projects?.length ?? 0);
     }
     if (user?.tier === "pro") {
-      return 5 - user.userToProject.length;
+      return 5 - (projects?.length ?? 0);
     }
     if (user?.tier === "premium") {
-      return 10 - user.userToProject.length;
+      return 10 - (projects?.length ?? 0);
     }
   };
 
@@ -119,10 +122,8 @@ const CreatePage = () => {
               <div className="flex items-center gap-2">
                 <Info className="size-4" />
                 <p className="text-sm">
-                  You have created or are a part {user?.userToProject.length}{" "}
-                  {(user?.userToProject.length ?? 0) > 0
-                    ? "projects"
-                    : "project"}
+                  You have created or are a part {projects?.length}{" "}
+                  {(projects?.length ?? 0) > 0 ? "projects" : "project"}
                 </p>
               </div>
               <p className="ml-6 text-sm text-secondary-foreground">
@@ -137,7 +138,7 @@ const CreatePage = () => {
             disabled={createProject.isPending || !canCreateProject()}
           >
             {createProject.isPending ? (
-              <div className="inline-flex gap-x-2">
+              <div className="inline-flex items-center gap-x-2">
                 <Loader className="size-8 animate-spin" />
                 <span>Creating Project</span>
               </div>
@@ -151,4 +152,4 @@ const CreatePage = () => {
   );
 };
 
-export default CreatePage;
+export default CreatePageClient;

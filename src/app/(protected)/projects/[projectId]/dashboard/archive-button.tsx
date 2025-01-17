@@ -5,6 +5,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import useProject from "@/hooks/use-project";
 import useRefetch from "@/hooks/use-refetch";
 import { api } from "@/trpc/react";
+import { redirect } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 
@@ -37,7 +38,7 @@ const ArchiveButton = () => {
               {
                 onSuccess: () => {
                   toast.success("Project archived");
-                  refetch();
+                  window.location.href = `/projects`;
                 },
                 onError: () => {
                   toast.error("Failed to archive project");
