@@ -16,8 +16,8 @@ export const groupPrsByLastSixMonths = (prs: GitHubPullRequest[]) => {
 
   // Group the issues by month
   prs.forEach((pr) => {
-    const issueDate = new Date(pr.prCreatedAt);
-    const monthYear = issueDate.toLocaleString("default", {
+    const prDate = pr.createdAt;
+    const monthYear = prDate.toLocaleString("default", {
       month: "long",
       year: "numeric",
     });

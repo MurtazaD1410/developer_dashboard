@@ -44,7 +44,7 @@ const IssueLog = ({ issues, onTabSelect }: IssueLogProps) => {
     // First apply tab filter
     if (tabName !== "all") {
       filteredIssues = filteredIssues.filter(
-        (issue) => issue.issueState === tabName,
+        (issue) => issue.state === tabName,
       );
     }
 
@@ -52,8 +52,8 @@ const IssueLog = ({ issues, onTabSelect }: IssueLogProps) => {
       const query = searchQuery.toLowerCase();
       filteredIssues = filteredIssues.filter(
         (issue) =>
-          issue.issueTitle.toLowerCase().includes(query) ||
-          issue.issueNumber.toString().includes(query),
+          issue.title.toLowerCase().includes(query) ||
+          issue.number.toString().includes(query),
       );
     }
 
@@ -131,52 +131,46 @@ const TabCustomContent = ({
   project,
   tabName,
 }: TabCustomContentProps) => {
-  var sortedIssues = issues.sort(
-    (a: GitHubIssue, b: GitHubIssue) =>
-      new Date(b.issueCreatedAt).getTime() -
-      new Date(a.issueCreatedAt).getTime(),
-  );
-
   if (tabName !== "all") {
-    sortedIssues = sortedIssues.filter((issue) => issue.issueState === tabName);
+    issues = issues.filter((issue) => issue.state === tabName);
   }
 
   return (
     <TabsContent value={tabName}>
-      {sortedIssues.map((issue) => (
+      {issues.map((issue) => (
         <div className="mb-5" key={issue.id}>
           <Card className="rounded-md">
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="w-fit">
                 <CardTitle className="flex items-center justify-between gap-x-3">
                   <div className="flex items-center gap-x-3">
-                    <HighlightBackticks text={issue.issueTitle} />{" "}
+                    <HighlightBackticks text={issue.title} />{" "}
                     <Link
                       className="py-0.5 text-xs leading-5 text-secondary-foreground"
                       target="_blank"
-                      href={`${project?.githubUrl}/issues/${issue.issueNumber}`}
+                      href={`${project?.githubUrl}/issues/${issue.number}`}
                     >
                       <span className="inline-flex items-center">
                         go to issue <ExternalLink className="ml-1 size-4" />
                       </span>
                     </Link>
-                    {issue.issueState === "open" ? (
+                    {issue.state === "open" ? (
                       <Badge
                         key={issue.id}
                         className="gap-x-2 rounded-full bg-green-500 p-1 px-2"
                         variant={"default"}
                       >
                         <CircleDotIcon size={16} />
-                        {issue.issueState}
+                        {issue.state}
                       </Badge>
-                    ) : issue.issueState === "closed" ? (
+                    ) : issue.state === "closed" ? (
                       <Badge
                         key={issue.id}
                         className="gap-x-2 rounded-full bg-purple-500 p-1 px-2"
                         variant={"default"}
                       >
                         <CheckCircle2 size={16} />
-                        {issue.issueState}
+                        {issue.state}
                       </Badge>
                     ) : (
                       <Badge
@@ -185,22 +179,22 @@ const TabCustomContent = ({
                         variant={"default"}
                       >
                         <CircleAlertIcon size={16} />
-                        {issue.issueState}
+                        {issue.state}
                       </Badge>
                     )}
                   </div>
                   <div className="text-xs text-secondary-foreground">
                     <span className="inline-flex items-center gap-x-1">
                       <Timer className="ml-1 size-4" /> Issue created{" "}
-                      {formatRelativeDate(issue.issueCreatedAt)}
+                      {formatRelativeDate(issue.createdAt)}
                     </span>
                   </div>
                 </CardTitle>
 
                 <div className="flex flex-wrap items-center gap-x-2">
-                  {issue.issueLabel &&
-                    issue.issueLabel?.length > 0 &&
-                    issue?.issueLabel?.map((label) => {
+                  {issue.label &&
+                    issue.label?.length > 0 &&
+                    issue?.label?.map((label) => {
                       return (
                         <Badge
                           key={label.id}
@@ -218,26 +212,26 @@ const TabCustomContent = ({
                     })}
                 </div>
               </div>
-              {issue.issueState === "closed" && (
+              {issue.state === "closed" && (
                 <div className="inline-flex items-center gap-x-2">
                   <Link
                     className="py-0.5 text-xs leading-5 text-gray-500"
                     target="_blank"
-                    href={`https://github.com/${issue.issueCloser?.userUsername}`}
+                    href={`https://github.com/${issue.closedBy?.userName}`}
                   >
                     <span className="inline-flex items-center text-secondary-foreground">
                       Issue closed by <ExternalLink className="ml-1 size-4" />
                     </span>
                   </Link>
                   <Avatar className="size-14">
-                    {issue.issueCloser?.userAvatar ? (
+                    {issue.closedBy?.userAvatar ? (
                       <AvatarImage
-                        src={issue.issueCloser?.userAvatar}
+                        src={issue.closedBy?.userAvatar}
                         className="size-14"
                       />
                     ) : (
                       <AvatarFallback className="size-14">
-                        {issue.issueCloser?.userName?.slice(0, 1) ?? (
+                        {issue.closedBy?.userName?.slice(0, 1) ?? (
                           <Github size={25} />
                         )}
                       </AvatarFallback>
@@ -246,21 +240,17 @@ const TabCustomContent = ({
                 </div>
               )}
             </CardHeader>
-            {(issue.issueDescription ||
-              (issue.issueAssignees?.length ?? 0) > 0) && (
+            {(issue.description || (issue.assignees?.length ?? 0) > 0) && (
               <CardContent>
                 <CardDescription className="text-justify text-secondary-foreground/80">
-                  <HighlightBackticks
-                    text={issue.issueDescription ?? ""}
-                    isDesc
-                  />
+                  <HighlightBackticks text={issue.description ?? ""} isDesc />
                 </CardDescription>
-                {(issue.issueAssignees?.length ?? 0) > 0 && (
+                {(issue.assignees?.length ?? 0) > 0 && (
                   <div className="mt-2 inline-flex items-center gap-x-2">
                     <p className="text-xs text-secondary-foreground/70">
                       This issue has been assigned to
                     </p>
-                    <AvatarGroup limit={3} users={issue.issueAssignees} />
+                    <AvatarGroup limit={3} users={issue.assignees} />
                   </div>
                 )}
               </CardContent>

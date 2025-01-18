@@ -1,20 +1,17 @@
 export interface GitHubUserProfile {
-  id?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  userName?: string | null;
-  userAvatar?: string | null;
-  userUsername?: string | null;
+  id?: number;
+  userName?: string;
+  userAvatar?: string;
 }
 
 export interface Label {
-  id?: string | null;
-  name?: string | null;
+  id?: number | null;
+  name?: string;
   color?: string | null;
 }
 
 export interface AssigneeOrReviewer {
-  id?: string | null;
+  id?: number | null;
   assigneeOrReviewerName?: string | null;
   assigneeOrReviewerAvatar?: string | null;
   assigneeOrReviewerUsername?: string | null;
@@ -36,22 +33,16 @@ export interface Project {
 }
 
 export interface GitHubRepository {
-  id: string;
+  id: number;
+  name: string;
+  private: boolean;
+  owner: GitHubUserProfile;
+  description?: string | null;
   createdAt: Date;
   updatedAt: Date;
-  projectId: string;
-  repoId: string;
-  repoName: string;
-  repoPrivate: boolean;
-  repoOwnerId: string;
-  repoOwner: GitHubUserProfile;
-  repoDescription?: string | null;
-  repoCreatedAt: Date;
-  repoUpdatedAt: Date;
-  repoTopics?: string[] | null;
-  repoOpenIssues: number;
-  repoDefaultBranch: string;
-  hash: string;
+  topics?: string[] | null;
+  openIssues: number;
+  defaultBranch: string;
 }
 
 export interface GitHubCommit {
@@ -68,44 +59,32 @@ export interface GitHubCommit {
 }
 
 export interface GitHubIssue {
-  id: string;
+  id: number;
+  number: number;
+  state: string;
+  title: string;
+  description: string | null;
+  creator: GitHubUserProfile;
   createdAt: Date;
-  updatedAt: Date;
-  projectId: string;
-  issueId: string;
-  issueNumber: number;
-  issueState: string;
-  issueTitle: string;
-  issueDescription?: string | null;
-  issueCreatedAt: Date;
-  issueCreatorId: string;
-  issueClosedById?: string | null;
-  issueClosedDate?: Date | null;
-  issueCreator: GitHubUserProfile;
-  issueCloser?: GitHubUserProfile | null;
-  issueLabel?: Label[] | null;
-  issueAssignees?: AssigneeOrReviewer[] | null;
-  hash: string;
+  assignees: GitHubUserProfile[] | null;
+  closedBy: GitHubUserProfile | null;
+  closedAt: Date | null;
+  label: Label[] | null;
 }
 
 export interface GitHubPullRequest {
-  id: string;
+  id: number;
+  number: number;
+  title: string;
+  state: string;
+  headRef: string;
+  baseRef: string;
+  description?: string | null;
+  creator: GitHubUserProfile;
   createdAt: Date;
-  updatedAt: Date;
-  projectId: string;
-  prId: string;
-  prNumber: number;
-  prTitle: string;
-  prState: string;
-  prHeadRef: string;
-  prBaseRef: string;
-  prDescription?: string | null;
-  prCreator: GitHubUserProfile;
-  prCreatedAt: Date;
-  prLabel?: Label[] | null;
-  prAssignees?: AssigneeOrReviewer[] | null;
-  prReviewers?: AssigneeOrReviewer[] | null;
-  prClosedAt?: Date | null;
-  prMergedAt?: Date | null;
-  hash: string;
+  label: Label[] | null;
+  reviewers?: GitHubUserProfile[] | null;
+  assignees?: GitHubUserProfile[] | null;
+  closedAt: Date | null;
+  mergedAt: Date | null;
 }

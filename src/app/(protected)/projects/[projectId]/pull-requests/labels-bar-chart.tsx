@@ -20,8 +20,8 @@ import { type GitHubPullRequest } from "@/types/types";
 
 const prepareChartData = (prs: GitHubPullRequest[], currentTab: string) => {
   let labeledPrs = prs.flatMap((pr) =>
-    pr.prLabel
-      ? pr.prLabel.map((label) => ({
+    pr.label
+      ? pr.label.map((label) => ({
           label: label,
           pr,
         }))
@@ -31,10 +31,10 @@ const prepareChartData = (prs: GitHubPullRequest[], currentTab: string) => {
   switch (currentTab) {
     case "open":
       labeledPrs = prs
-        .filter((pr) => pr.prState === "open")
+        .filter((pr) => pr.state === "open")
         .flatMap((pr) =>
-          pr.prLabel
-            ? pr.prLabel.map((label) => ({
+          pr.label
+            ? pr.label.map((label) => ({
                 label: label,
                 pr,
               }))
@@ -43,10 +43,10 @@ const prepareChartData = (prs: GitHubPullRequest[], currentTab: string) => {
       break;
     case "closed":
       labeledPrs = prs
-        .filter((pr) => pr.prState === "closed" && pr.prMergedAt === null)
+        .filter((pr) => pr.state === "closed" && pr.mergedAt === null)
         .flatMap((pr) =>
-          pr.prLabel
-            ? pr.prLabel.map((label) => ({
+          pr.label
+            ? pr.label.map((label) => ({
                 label: label,
                 pr,
               }))
@@ -56,10 +56,10 @@ const prepareChartData = (prs: GitHubPullRequest[], currentTab: string) => {
 
     case "merged":
       labeledPrs = prs
-        .filter((pr) => pr.prMergedAt !== null)
+        .filter((pr) => pr.mergedAt !== null)
         .flatMap((pr) =>
-          pr.prLabel
-            ? pr.prLabel.map((label) => ({
+          pr.label
+            ? pr.label.map((label) => ({
                 label: label,
                 pr,
               }))
@@ -170,9 +170,31 @@ const PrLabelsBarChart = ({
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) =>
-                chartConfig[value as keyof typeof chartConfig]?.label as string
-              }
+              tick={({ x, y, payload }) => {
+                const maxLength = 15; // Maximum length for labels
+                const label =
+                  payload.value.length > maxLength
+                    ? `${payload.value.slice(0, maxLength)}...`
+                    : payload.value;
+
+                return (
+                  <text
+                    x={x}
+                    y={y}
+                    dy={3}
+                    textAnchor="end"
+                    fill="#000"
+                    fontSize="12"
+                    style={{
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {label}
+                  </text>
+                );
+              }}
             />
             <XAxis dataKey="prs" type="number" hide />
             <ChartTooltip

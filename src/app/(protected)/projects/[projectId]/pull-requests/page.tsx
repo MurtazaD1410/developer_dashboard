@@ -9,6 +9,7 @@ import { type GitHubPullRequest } from "@/types/types";
 import { groupPrsByLastSixMonths } from "./helper/group-prs-last-six-months";
 import MonthlyPrsAreaChart from "./monthly-area-chart";
 import PrLabelsBarChart from "./labels-bar-chart";
+import PrsSummaryPieChart from "./pr-summary-pie-chart";
 
 const PullRequestsPage = () => {
   const { projectId, isLoading, isError } = useProject();
@@ -34,11 +35,12 @@ const PullRequestsPage = () => {
     prs &&
     groupedPrs && (
       <div className="flex flex-col gap-5">
-        <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
           <MonthlyPrsAreaChart
             groupedPrs={groupedPrs}
             currentTab={chartDataTabName}
           />
+          <PrsSummaryPieChart groupedPrs={groupedPrs} />
           <PrLabelsBarChart
             prs={prs}
             currentTab={chartDataTabName}

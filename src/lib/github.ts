@@ -1,9 +1,12 @@
 import { db } from "@/server/db";
 import { Octokit } from "octokit";
-import axios from "axios";
+
 import { aiSummarizeCommit } from "./gemini";
-import crypto from "crypto";
-import stableStringify from "fast-json-stable-stringify";
+import {
+  type GitHubPullRequest,
+  type GitHubIssue,
+  type GitHubRepository,
+} from "@/types/types";
 
 export const octokit = new Octokit({
   // auth: process.env.GITHUB_TOKEN,
@@ -12,29 +15,11 @@ export const octokit = new Octokit({
 
 // ! REPOSITORY SECTION
 
-type RepositoryOwner = {
-  userName: string;
-  userAvatar: string;
-  userUsername: string;
-};
-
-type RepositoryResponse = {
-  repoId: string;
-  repoName: string;
-  repoPrivate: boolean;
-  repoOwner: RepositoryOwner;
-  repoDescription: string;
-  repoCreatedAt: string;
-  repoUpdatedAt: string;
-  repoTopics: string[];
-  repoOpenIssues: number;
-  repoDefaultBranch: string;
-  hash?: string;
-};
-
 export const getRepository = async (
-  githubUrl: string,
-): Promise<RepositoryResponse> => {
+  projectId: string,
+): Promise<GitHubRepository> => {
+  const { githubUrl } = await fetchProjectGithubUrl(projectId);
+
   const [owner, repo] = githubUrl.split("/").slice(-2);
 
   if (!owner || !repo) {
@@ -47,110 +32,21 @@ export const getRepository = async (
   });
 
   return {
-    repoId: String(repoData.id),
-    repoName: repoData.name,
-    repoPrivate: repoData.private,
-    repoOwner: {
-      userAvatar: repoData.owner.avatar_url,
-      userUsername: repoData.owner.login,
+    id: repoData.id,
+    name: repoData.name,
+    private: repoData.private,
+    owner: {
+      id: repoData.owner.id,
       userName: repoData.owner.login,
+      userAvatar: repoData.owner.avatar_url,
     },
-    repoDescription: repoData.description ?? "",
-    repoCreatedAt: repoData.created_at,
-    repoUpdatedAt: repoData.updated_at,
-    repoTopics: repoData.topics ?? [],
-    repoOpenIssues: repoData.open_issues_count,
-    repoDefaultBranch: repoData.default_branch,
+    description: repoData.description ?? "",
+    createdAt: new Date(repoData.created_at),
+    updatedAt: new Date(repoData.updated_at),
+    topics: repoData.topics ?? [],
+    openIssues: repoData.open_issues_count,
+    defaultBranch: repoData.default_branch,
   };
-};
-
-export const pollRepository = async (projectId: string) => {
-  const { githubUrl } = await fetchProjectGithubUrl(projectId);
-
-  // Fetch issues from GitHub
-  const repository = await getRepository(githubUrl);
-
-  const existingRepository = await db.repository.findFirst({
-    where: { projectId },
-  });
-
-  const existingHash = new Set(existingRepository?.hash);
-
-  const hash = computeRepoHash(repository);
-
-  let unprocessedRepo;
-  if (!existingHash.has(hash)) {
-    unprocessedRepo = repository;
-  }
-
-  if (unprocessedRepo) {
-    try {
-      // Create or fetch the owner
-      const owner = await db.gitHubUserProfile.upsert({
-        where: { userUsername: repository.repoOwner.userUsername },
-        update: {
-          userName: repository.repoOwner.userName,
-          userAvatar: repository.repoOwner.userAvatar,
-        },
-        create: {
-          userName: repository.repoOwner.userName,
-          userAvatar: repository.repoOwner.userAvatar,
-          userUsername: repository.repoOwner.userUsername,
-        },
-      });
-
-      // Compute hash once
-      const hash = repository.hash ?? computeRepoHash(repository);
-
-      const updateData: any = {
-        projectId: projectId,
-        repoName: repository.repoName,
-        repoPrivate: repository.repoPrivate,
-        repoOwnerId: owner.id,
-        repoDescription: repository.repoDescription,
-        repoCreatedAt: repository.repoCreatedAt,
-        repoUpdatedAt: repository.repoUpdatedAt,
-        repoTopics: repository.repoTopics,
-        repoOpenIssues: repository.repoOpenIssues,
-        repoDefaultBranch: repository.repoDefaultBranch,
-        hash,
-      };
-
-      const createData: any = {
-        projectId: projectId,
-        repoId: repository.repoId,
-        repoName: repository.repoName,
-        repoPrivate: repository.repoPrivate,
-        repoOwnerId: owner.id,
-        repoDescription: repository.repoDescription,
-        repoUpdatedAt: repository.repoUpdatedAt,
-        repoCreatedAt: repository.repoCreatedAt,
-        repoTopics: repository.repoTopics,
-        repoOpenIssues: repository.repoOpenIssues,
-        repoDefaultBranch: repository.repoDefaultBranch,
-        hash,
-      };
-
-      // Upsert the repo
-      await db.repository.upsert({
-        where: { repoId: repository.repoId },
-        update: updateData,
-        create: createData,
-      });
-    } catch (error) {
-      console.error(
-        `Failed to process repository ${repository.repoId}:`,
-        error,
-      );
-    }
-  }
-
-  return { message: "Repo processed successfully" };
-};
-
-export const computeRepoHash = (repository: RepositoryResponse) => {
-  const serialized = stableStringify(repository);
-  return crypto.createHash("sha256").update(serialized).digest("hex");
 };
 
 // ! COMMITS SECTION
@@ -294,36 +190,10 @@ async function fetchProjectGithubUrl(projectId: string) {
 }
 
 // ! ISSUES SECTION
-type GitHubUserProfile = {
-  userName: string;
-  userAvatar: string;
-  userUsername: string;
-};
 
-type IssueOrPrLabel = {
-  name: string;
-  color: string | null;
-};
+export const getIssues = async (projectId: string): Promise<GitHubIssue[]> => {
+  const { githubUrl } = await fetchProjectGithubUrl(projectId);
 
-type IssueResponse = {
-  issueId: string;
-  issueNumber: number;
-  issueState: string;
-  issueTitle: string;
-  issueDescription: string;
-  issueCreator: GitHubUserProfile;
-  issueCreatedAt: string;
-  issueAssigned: GitHubUserProfile[] | null;
-  issueAssignedIds: String[];
-  issueLabel: IssueOrPrLabel[] | null;
-  issueClosedBy: GitHubUserProfile;
-  issueClosedAt: string;
-  hash?: string;
-};
-
-export const getIssues = async (
-  githubUrl: string,
-): Promise<IssueResponse[]> => {
   const [owner, repo] = githubUrl.split("/").slice(-2);
 
   if (!owner || !repo) {
@@ -334,255 +204,61 @@ export const getIssues = async (
     owner,
     repo,
     state: "all",
+    per_page: 100,
+    sort: "created",
+    direction: "desc",
   });
 
-  const sortedIssues = data.sort(
-    (a: any, b: any) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-  );
-
-  return sortedIssues.slice(0, 50).map((issue) => ({
-    issueId: String(issue.id),
-    issueNumber: issue.number,
-    issueState: issue.state,
-    issueTitle: issue.title,
-    issueDescription: issue.body ?? "",
-    issueCreator: {
-      userAvatar: issue.user?.avatar_url ?? "",
-      userName: issue.user?.login ?? "", // GitHub API does not provide `name` directly in the user object
-      userUsername: issue.user?.login ?? "",
+  const formattedIssues = data.map((issue) => ({
+    id: issue.id,
+    number: issue.number,
+    state: issue.state,
+    title: issue.title,
+    description: issue.body ?? null,
+    creator: {
+      id: issue.user?.id,
+      userName: issue.user?.login,
+      userAvatar: issue.user?.avatar_url,
     },
-    issueCreatedAt: issue.created_at,
-    issueAssigned:
+    createdAt: new Date(issue.created_at),
+    assignees:
       issue.assignees?.map((assignee) => ({
-        userName: assignee.avatar_url,
-        userAvatar: assignee.login ?? "", // GitHub API does not provide `name` directly
-        userUsername: assignee.login,
+        id: assignee.id,
+        userName: assignee.login,
+        userAvatar: assignee.avatar_url,
       })) ?? null,
-    issueAssignedIds: issue.assignees?.map((assignee) => assignee.login) ?? [],
-    issueClosedBy: issue.closed_by
+    closedBy: issue.closed_by
       ? {
-          userAvatar: issue.closed_by.avatar_url ?? "",
-          userName: issue.closed_by.login ?? "", // Same as above
-          userUsername: issue.closed_by.login ?? "",
+          id: issue.closed_by.id,
+          userAvatar: issue.closed_by.avatar_url,
+          userName: issue.closed_by.login,
         }
-      : {
-          userAvatar: "",
-          userName: "",
-          userUsername: "",
-        },
-    issueClosedAt: issue.closed_at ?? "",
-    issueLabel:
+      : null,
+    closedAt: issue.closed_at ? new Date(issue.closed_at) : null,
+    label:
       issue.labels.map((label) => {
         if (typeof label === "string") {
-          return { name: label, color: null }; // Handle string labels
+          return { id: null, name: label, color: null };
         } else {
           return {
-            name: label.name ?? "",
+            id: label.id,
+            name: label.name,
             color: label.color ?? null,
           };
         }
-      }) ?? [],
+      }) ?? null,
   }));
-};
 
-export const pollIssues = async (projectId: string) => {
-  const { githubUrl } = await fetchProjectGithubUrl(projectId);
-
-  // Fetch issues from GitHub
-  const issues = await getIssues(githubUrl);
-
-  // Filter unprocessed issues
-  const unprocessedIssues = await filterUnprocessedIssues(projectId, issues);
-
-  for (const issue of unprocessedIssues) {
-    try {
-      // Create or fetch the creator
-      const creator = await db.gitHubUserProfile.upsert({
-        where: { userUsername: issue.issueCreator.userUsername },
-        update: {
-          userName: issue.issueCreator.userName,
-          userAvatar: issue.issueCreator.userAvatar,
-        },
-        create: {
-          userName: issue.issueCreator.userName,
-          userAvatar: issue.issueCreator.userAvatar,
-          userUsername: issue.issueCreator.userUsername,
-        },
-      });
-
-      // Create or fetch the closer if it exists
-      let closer = null;
-      if (issue.issueClosedBy) {
-        closer = await db.gitHubUserProfile.upsert({
-          where: { userUsername: issue.issueClosedBy.userUsername },
-          update: {
-            userName: issue.issueClosedBy.userName,
-            userAvatar: issue.issueClosedBy.userAvatar,
-          },
-          create: {
-            userName: issue.issueClosedBy.userName,
-            userAvatar: issue.issueClosedBy.userAvatar,
-            userUsername: issue.issueClosedBy.userUsername,
-          },
-        });
-      }
-
-      // Compute hash once
-      const hash = issue.hash ?? computeIssueHash(issue);
-
-      const updateData: any = {
-        projectId: projectId,
-        issueCreatedAt: issue.issueCreatedAt,
-        issueTitle: issue.issueTitle,
-        issueDescription: issue.issueDescription,
-        issueCreatorId: creator.id,
-        issueState: issue.issueState,
-        hash,
-      };
-
-      const createData: any = {
-        projectId: projectId,
-        issueId: issue.issueId,
-        issueState: issue.issueState,
-        issueNumber: issue.issueNumber,
-        issueCreatedAt: issue.issueCreatedAt,
-        issueTitle: issue.issueTitle,
-        issueDescription: issue.issueDescription,
-        issueCreatorId: creator.id,
-        hash,
-      };
-
-      if (closer && issue.issueState === "closed") {
-        updateData.issueClosedById = closer.id;
-        updateData.issueClosedDate = issue.issueClosedAt;
-
-        createData.issueClosedById = closer.id;
-        createData.issueClosedDate = issue.issueClosedAt;
-      }
-
-      // Upsert the issue
-      const updatedIssue = await db.issue.upsert({
-        where: { issueId: issue.issueId },
-        update: updateData,
-        create: createData,
-      });
-
-      // Handle assigned users
-      if (issue.issueAssigned) {
-        for (const assignee of issue.issueAssigned) {
-          const assignedUser = await db.assignedOrReviewerUser.upsert({
-            where: { userUsername: assignee.userUsername },
-            update: {
-              userName: assignee.userName,
-              userAvatar: assignee.userAvatar,
-            },
-            create: {
-              userName: assignee.userName,
-              userAvatar: assignee.userAvatar,
-              userUsername: assignee.userUsername,
-            },
-          });
-
-          // Link assigned user to issue
-          await db.linkToAssignedOrReviewerUser.upsert({
-            where: {
-              issueAssigneeId_issueId: {
-                issueId: updatedIssue.id,
-                issueAssigneeId: assignedUser.id,
-              },
-            },
-            update: {}, // No updates needed for junction table
-            create: {
-              issueId: updatedIssue.id,
-              issueAssigneeId: assignedUser.id,
-            },
-          });
-        }
-      }
-
-      // Handle labels
-      if (issue.issueLabel) {
-        for (const label of issue.issueLabel) {
-          const issueLabel = await db.label.upsert({
-            where: { name: label.name },
-            update: { color: label.color },
-            create: { name: label.name, color: label.color },
-          });
-
-          // Link label to issue
-          await db.linkToLabel.upsert({
-            where: {
-              issueLabelId_issueId: {
-                issueId: updatedIssue.id,
-                issueLabelId: issueLabel.id,
-              },
-            },
-            update: {}, // No updates needed for junction table
-            create: {
-              issueId: updatedIssue.id,
-              issueLabelId: issueLabel.id,
-            },
-          });
-        }
-      }
-    } catch (error) {
-      console.error(`Failed to process issue ${issue.issueId}:`, error);
-    }
-  }
-
-  return { message: "Issues processed successfully" };
-};
-
-export const computeIssueHash = (issue: IssueResponse) => {
-  const serialized = stableStringify(issue);
-  return crypto.createHash("sha256").update(serialized).digest("hex");
-};
-
-export const filterUnprocessedIssues = async (
-  projectId: string,
-  incomingIssues: IssueResponse[],
-) => {
-  const existingIssues = await db.issue.findMany({
-    where: { projectId },
-    select: { hash: true },
-  });
-
-  const existingHashes = new Set(existingIssues.map((issue) => issue.hash));
-
-  const unprocessedIssues = incomingIssues.filter((issue) => {
-    const hash = computeIssueHash(issue);
-    return !existingHashes.has(hash);
-  });
-
-  return unprocessedIssues;
+  return formattedIssues;
 };
 
 // ! PULLS SECTION
 
-type PullRequestResponse = {
-  prId: string;
-  prNumber: number;
-  prTitle: string;
-  prState: string;
-  prHeadRef: string;
-  prBaseRef: string;
-  prDescription: string;
-  prCreator: GitHubUserProfile;
-  prCreatedAt: string;
-  prLabels: IssueOrPrLabel[] | null;
-  prAssigned: GitHubUserProfile[] | null;
-  prAssignedIds: String[];
-  prReviewers: GitHubUserProfile[] | null;
-  prReviewersIds: String[];
-  prClosedAt: string;
-  prMergedAt: string;
-  hash?: string;
-};
-
 export const getPullRequests = async (
-  githubUrl: string,
-): Promise<PullRequestResponse[]> => {
+  projectId: string,
+): Promise<GitHubPullRequest[]> => {
+  const { githubUrl } = await fetchProjectGithubUrl(projectId);
+
   const [owner, repo] = githubUrl.split("/").slice(-2);
 
   if (!owner || !repo) {
@@ -593,250 +269,52 @@ export const getPullRequests = async (
     owner,
     repo,
     state: "all",
+    per_page: 100,
+    sort: "created",
+    direction: "desc",
   });
 
-  const sortedPrs = data.sort(
-    (a: any, b: any) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-  );
-
-  return sortedPrs.slice(0, 50).map((pr) => ({
-    prId: String(pr.id),
-    prNumber: pr.number,
-    prTitle: pr.title,
-    prState: pr.state,
-    prHeadRef: pr.head.ref,
-    prBaseRef: pr.base.ref,
-    prDescription: pr.body ?? "",
-    prCreator: {
-      userAvatar: pr.user?.avatar_url ?? "",
-      userName: pr.user?.login ?? "",
-      userUsername: pr.user?.login ?? "",
+  const formattedPrs = data.map((pr) => ({
+    id: pr.id,
+    number: pr.number,
+    title: pr.title,
+    state: pr.state,
+    headRef: pr.head.ref,
+    baseRef: pr.base.ref,
+    description: pr.body ?? null,
+    creator: {
+      id: pr.user?.id,
+      userName: pr.user?.login,
+      userAvatar: pr.user?.avatar_url,
     },
-    prCreatedAt: pr.created_at,
-    prMergedAt: pr.merged_at ?? "",
-    prLabels:
+    createdAt: new Date(pr.created_at),
+    mergedAt: pr.merged_at ? new Date(pr.merged_at) : null,
+    label:
       pr.labels.map((label) => {
         if (typeof label === "string") {
-          return { name: label, color: null }; // Handle string labels
+          return { id: null, name: label, color: null };
         } else {
           return {
-            name: label.name ?? "",
+            id: label.id,
+            name: label.name,
             color: label.color ?? null,
           };
         }
-      }) ?? [],
-    prAssigned:
+      }) ?? null,
+    assignees:
       pr.assignees?.map((assignee) => ({
+        id: assignee.id,
+        userName: assignee.login,
         userAvatar: assignee.avatar_url,
-        userName: assignee.login ?? "",
-        userUsername: assignee.login,
       })) ?? null,
-    prAssignedIds: pr.assignees?.map((assignee) => assignee.login) ?? [],
-    prReviewers:
+    reviewers:
       pr.requested_reviewers?.map((reviewer) => ({
+        id: reviewer.id,
+        userName: reviewer.login,
         userAvatar: reviewer.avatar_url,
-        userName: reviewer.login ?? "",
-        userUsername: reviewer.login,
       })) ?? null,
-    prReviewersIds:
-      pr.requested_reviewers?.map((reviewer) => reviewer.login) ?? [],
-    prClosedAt: pr.closed_at ?? "",
+    closedAt: pr.closed_at ? new Date(pr.closed_at) : null,
   }));
-};
 
-export const pollPrs = async (projectId: string) => {
-  const { githubUrl } = await fetchProjectGithubUrl(projectId);
-
-  // Fetch issues from GitHub
-  const prs = await getPullRequests(githubUrl);
-
-  // Filter unprocessed issues
-  const unprocessedPrs = await filterUnprocessedPrs(projectId, prs);
-
-  for (const pr of unprocessedPrs) {
-    try {
-      // Create or fetch the creator
-      const creator = await db.gitHubUserProfile.upsert({
-        where: { userUsername: pr.prCreator.userUsername },
-        update: {
-          userName: pr.prCreator.userName,
-          userAvatar: pr.prCreator.userAvatar,
-        },
-        create: {
-          userName: pr.prCreator.userName,
-          userAvatar: pr.prCreator.userAvatar,
-          userUsername: pr.prCreator.userUsername,
-        },
-      });
-
-      // Compute hash once
-      const hash = pr.hash ?? computePrHash(pr);
-
-      const updateData: any = {
-        projectId: projectId,
-        prId: pr.prId,
-        prTitle: pr.prTitle,
-        prState: pr.prState,
-        prHeadRef: pr.prHeadRef,
-        prBaseRef: pr.prBaseRef,
-        prDescription: pr.prDescription,
-        prCreatorId: creator.id,
-        prCreatedAt: pr.prCreatedAt,
-        hash,
-      };
-
-      const createData: any = {
-        projectId: projectId,
-        prId: pr.prId,
-        prNumber: pr.prNumber,
-        prTitle: pr.prTitle,
-        prState: pr.prState,
-        prHeadRef: pr.prHeadRef,
-        prBaseRef: pr.prBaseRef,
-        prDescription: pr.prDescription,
-        prCreatorId: creator.id,
-        prCreatedAt: pr.prCreatedAt,
-        hash,
-      };
-
-      if (pr.prClosedAt && pr.prState === "closed") {
-        updateData.prClosedAt = pr.prClosedAt;
-        createData.prClosedAt = pr.prClosedAt;
-      }
-
-      if (pr.prMergedAt) {
-        updateData.prMergedAt = pr.prMergedAt;
-        createData.prMergedAt = pr.prMergedAt;
-      }
-
-      // Upsert the issue
-      const updatedPr = await db.pullRequest.upsert({
-        where: { prId: pr.prId },
-        update: updateData,
-        create: createData,
-      });
-
-      // Handle assigned users
-      if (pr.prAssigned) {
-        for (const assignee of pr.prAssigned) {
-          const assignedUser = await db.assignedOrReviewerUser.upsert({
-            where: { userUsername: assignee.userUsername },
-            update: {
-              userName: assignee.userName,
-              userAvatar: assignee.userAvatar,
-            },
-            create: {
-              userName: assignee.userName,
-              userAvatar: assignee.userAvatar,
-              userUsername: assignee.userUsername,
-            },
-          });
-
-          // Link assigned user to issue
-          await db.linkToAssignedOrReviewerUser.upsert({
-            where: {
-              prAssigneeId_pullRequestId: {
-                pullRequestId: updatedPr.id,
-                prAssigneeId: assignedUser.id,
-              },
-            },
-            update: {}, // No updates needed for junction table
-            create: {
-              pullRequestId: updatedPr.id,
-              prAssigneeId: assignedUser.id,
-            },
-          });
-        }
-      }
-
-      if (pr.prReviewers) {
-        for (const reviewer of pr.prReviewers) {
-          const ReviewedUser = await db.assignedOrReviewerUser.upsert({
-            where: {
-              userUsername: reviewer.userName,
-            },
-            update: {
-              userName: reviewer.userName,
-              userAvatar: reviewer.userAvatar,
-            },
-            create: {
-              userName: reviewer.userName,
-              userAvatar: reviewer.userAvatar,
-              userUsername: reviewer.userUsername,
-            },
-          });
-
-          // Link assigned user to issue
-          await db.linkToAssignedOrReviewerUser.upsert({
-            where: {
-              prReviewerId_pullRequestId: {
-                pullRequestId: updatedPr.id,
-                prReviewerId: ReviewedUser.id,
-              },
-            },
-            update: {}, // No updates needed for junction table
-            create: {
-              pullRequestId: updatedPr.id,
-              prReviewerId: ReviewedUser.id,
-            },
-          });
-        }
-      }
-
-      // Handle labels
-      if (pr.prLabels) {
-        for (const label of pr.prLabels) {
-          const prLabel = await db.label.upsert({
-            where: { name: label.name },
-            update: { color: label.color },
-            create: { name: label.name, color: label.color },
-          });
-
-          // Link label to issue
-          await db.linkToLabel.upsert({
-            where: {
-              prLabelId_pullRequestId: {
-                pullRequestId: updatedPr.id,
-                prLabelId: prLabel.id,
-              },
-            },
-            update: {}, // No updates needed for junction table
-            create: {
-              pullRequestId: updatedPr.id,
-              prLabelId: prLabel.id,
-            },
-          });
-        }
-      }
-    } catch (error) {
-      console.error(`Failed to process issue ${pr.prId}:`, error);
-    }
-  }
-
-  return { message: "Prs processed successfully" };
-};
-
-export const computePrHash = (pr: PullRequestResponse) => {
-  const serialized = stableStringify(pr);
-  return crypto.createHash("sha256").update(serialized).digest("hex");
-};
-
-export const filterUnprocessedPrs = async (
-  projectId: string,
-  incomingPrs: PullRequestResponse[],
-) => {
-  const existingPrs = await db.issue.findMany({
-    where: { projectId },
-    select: { hash: true },
-  });
-
-  const existingHashes = new Set(existingPrs.map((pr) => pr.hash));
-
-  const unprocessedIssues = incomingPrs.filter((pr) => {
-    const hash = computePrHash(pr);
-    return !existingHashes.has(hash);
-  });
-
-  return unprocessedIssues;
+  return formattedPrs;
 };
