@@ -38,3 +38,57 @@ export const groupIssuesByLastSixMonths = (issues: GitHubIssue[]) => {
 
   return result;
 };
+
+export const groupIssuesByDateRange = (issues: GitHubIssue[]) => {
+  if (!issues || issues.length === 0) {
+    console.log("No issues provided.");
+    return [];
+  }
+
+  // Sort issues by `createdAt` date to find the range
+  const sortedIssues = [...issues].sort(
+    (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+  );
+
+  const startDate = new Date(sortedIssues[0]!.createdAt); // Earliest date
+  const endDate = new Date(sortedIssues[sortedIssues.length - 1]!.createdAt); // Latest date
+
+  // Generate all months within the range
+  const monthsInRange: string[] = [];
+  let currentDate = new Date(startDate);
+  currentDate.setDate(1); // Normalize to the first day of the month
+
+  while (currentDate <= endDate) {
+    const monthYear = currentDate.toLocaleString("default", {
+      month: "long",
+      year: "numeric",
+    });
+    monthsInRange.push(monthYear);
+    currentDate.setMonth(currentDate.getMonth() + 1);
+  }
+
+  // Initialize the result object with empty arrays for each month
+  const groupedIssues: Record<string, GitHubIssue[]> = {};
+  monthsInRange.forEach((month) => {
+    groupedIssues[month] = [];
+  });
+
+  // Group issues by their creation month
+  issues.forEach((issue) => {
+    const monthYear = new Date(issue.createdAt).toLocaleString("default", {
+      month: "long",
+      year: "numeric",
+    });
+
+    if (groupedIssues[monthYear]) {
+      groupedIssues[monthYear].push(issue);
+    }
+  });
+
+  const result = monthsInRange.map((month) => ({
+    month,
+    items: groupedIssues[month],
+  }));
+
+  return result.reverse();
+};

@@ -82,7 +82,7 @@ const PrsSummaryPieChart = ({ groupedPrs }: PrsSummaryPieChartProps) => {
     <Card className="flex flex-col justify-between gap-0 rounded-md">
       <CardHeader className="items-center">
         <CardTitle>Pie Chart - Pull Requests Summary</CardTitle>
-        <CardDescription>{`${groupedPrs?.[5]?.month} - ${groupedPrs?.[0]?.month}`}</CardDescription>
+        <CardDescription>{`${groupedPrs?.[groupedPrs.length - 1]?.month} - ${groupedPrs?.[0]?.month}`}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
         {!chartData.length && (

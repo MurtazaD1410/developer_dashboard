@@ -22,6 +22,7 @@ type PricingTier = {
   name: string;
   metaname: UserTier;
   price: string;
+  reposLimit: number;
   description: string;
   features: string[];
   buttonText: string;
@@ -38,6 +39,7 @@ const PricingPage = () => {
       name: "Hobby",
       metaname: UserTier.basic,
       price: "Free",
+      reposLimit: 3,
       description: "Perfect for personal projects and learning",
       features: [
         "Up to 3 repositories",
@@ -52,6 +54,7 @@ const PricingPage = () => {
       name: "Pro",
       metaname: UserTier.pro,
       price: "€29",
+      reposLimit: 5,
       description: "For professional developers and small teams",
       features: [
         "Up to 10 repositories",
@@ -69,6 +72,7 @@ const PricingPage = () => {
       name: "Premium",
       metaname: UserTier.premium,
       price: "€99",
+      reposLimit: 10,
       description: "For large teams and organizations",
       features: [
         "Unlimited repositories",
@@ -126,10 +130,10 @@ const PricingPage = () => {
 
       {/* Current Plan Info */}
       <div className="mb-8 xl:mb-16">
-        <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-700">
+        <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-700 dark:border-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
           <div className="flex flex-col items-start gap-2">
             <div className="flex gap-x-2">
-              <Info className="size-4" />
+              <Info className="size-4 text-blue-700 dark:text-blue-300" />
               <p className="text-sm font-medium">
                 You are currently on the {user?.tier.slice(0, 1).toUpperCase()}
                 {user?.tier.slice(1)} plan
@@ -137,7 +141,7 @@ const PricingPage = () => {
             </div>
             {user?.tier !== "basic" && (
               <Button variant={"destructive"} onClick={canCancelSubscription}>
-                Cancel Supscription
+                Cancel Subscription
               </Button>
             )}
           </div>
@@ -151,7 +155,7 @@ const PricingPage = () => {
             key={tier.name}
             className={`relative transition-all duration-300 ${
               tier.popular
-                ? "mx-4 border-primary shadow-lg hover:scale-[1.06] xl:mx-0 xl:-mt-4 xl:scale-110"
+                ? "mx-4 border-primary shadow-lg hover:scale-[1.15] xl:mx-0 xl:-mt-4 xl:scale-110"
                 : "mx-8 hover:scale-[1.02] xl:mx-0"
             }`}
           >
@@ -213,7 +217,10 @@ const PricingPage = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Repositories</CardTitle>
-              <div className="text-2xl font-bold">{projects?.length}/3</div>
+              <div className="text-2xl font-bold">
+                {projects?.length}/
+                {tiers.find((tier) => tier.metaname === user?.tier)?.reposLimit}
+              </div>
               <p className="text-sm text-muted-foreground">
                 Active repositories
               </p>
@@ -251,7 +258,7 @@ const PricingPage = () => {
 
       {/* FAQ or Additional Info */}
       <div className="mt-12 border-t pt-8">
-        <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-700">
+        <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-700 dark:border-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
           <div className="flex items-center gap-2">
             <Info className="size-4" />
             <p className="text-sm">
