@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DescriptionRenderer from "@/components/decription-text";
 
 interface PrLogProps {
   prs: GitHubPullRequest[];
@@ -223,7 +224,7 @@ const TabCustomContent = ({ prs, project, tabName }: TabCustomContentProps) => {
               window.open(`${project?.githubUrl}/pull/${pr.number}`, "_blank");
             }}
           >
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-5">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
                   <div className={`mt-1 ${getStatusColor(pr)}`}>
@@ -260,27 +261,28 @@ const TabCustomContent = ({ prs, project, tabName }: TabCustomContentProps) => {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  {pr.label?.map((label, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      style={{
-                        backgroundColor: "white",
-                        borderColor: darkenColor(label.color!),
-                        color: darkenColor(label.color!),
-                      }}
-                    >
-                      {label.name}
-                    </Badge>
-                  ))}
+                  {pr.label?.map((label) => {
+                    return (
+                      <Badge
+                        key={label.id}
+                        className="my-2"
+                        variant={"outline"}
+                        style={{
+                          borderRadius: 5,
+                          color: darkenColor(label.color!),
+                          borderColor: darkenColor(label.color!),
+                        }}
+                      >
+                        {label.name}
+                      </Badge>
+                    );
+                  })}
                 </div>
               </div>
             </CardHeader>
             <CardContent className="flex flex-col gap-y-2 text-secondary-foreground/80">
               {pr.description && (
-                <CardDescription>
-                  <HighlightBackticks text={pr.description} isDesc />
-                </CardDescription>
+                <DescriptionRenderer description={pr.description} />
               )}
 
               {((pr.assignees?.length ?? 0) > 0 ||

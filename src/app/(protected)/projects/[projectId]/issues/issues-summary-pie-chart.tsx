@@ -158,10 +158,10 @@ const IssuesSummaryPieChart = ({
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 text-center font-medium leading-none">
-          Showing the open and closed issues for the project.
+          Issues Distribution
         </div>
         <div className="text-center leading-none text-muted-foreground">
-          Showing total issues for the last 6 months
+          Showing the proportion of open vs closed issues in the project
         </div>
       </CardFooter>
     </Card>

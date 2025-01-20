@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { type UserTier } from "@/types/types";
+import { UserTier } from "@/types/types";
 
 export const userRouter = createTRPCRouter({
   getUser: protectedProcedure.query(async ({ ctx }) => {
@@ -36,28 +36,12 @@ export const userRouter = createTRPCRouter({
       return userRole;
     }),
   cancelSubscription: protectedProcedure
-    .input(z.object({ tier: z.string() }))
+    .input(z.object({ tier: z.enum([UserTier.basic]) }))
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.user.findUnique({
-        where: { id: ctx.user.userId! },
-        select: {
-          tier: true,
-          userToProject: {
-            where: { userId: ctx.user.userId! },
-          },
-        },
-      });
-
-      if ((user?.userToProject.length ?? 0) > 3) {
-        throw new Error(
-          "Please delete some projects to cancel your subscription",
-        );
-      }
-
       return await ctx.db.user.update({
         where: { id: ctx.user.userId! },
         data: {
-          tier: input.tier as UserTier,
+          tier: input.tier,
         },
       });
     }),

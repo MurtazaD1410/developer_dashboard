@@ -77,6 +77,9 @@ export function AppSideBar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link
+                      aria-disabled={
+                        projects?.length === 0 || projects === undefined
+                      }
                       href={
                         item.url === "billing"
                           ? "/billing"

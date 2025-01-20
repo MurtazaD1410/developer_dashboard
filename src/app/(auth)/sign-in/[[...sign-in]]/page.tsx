@@ -1,12 +1,15 @@
+"use client";
 import React from "react";
 import { SignIn } from "@clerk/nextjs";
 import { BarChartHorizontal, LineChart, GitCommit, Users } from "lucide-react";
+import { useTheme } from "next-themes";
 
 const SignInPage = () => {
+  const { theme } = useTheme();
   return (
     <div className="flex min-h-screen">
       {/* Left side - Auth Form */}
-      <div className="relative flex w-full flex-col items-center justify-center px-6 lg:w-1/2 lg:px-12">
+      <div className="relative flex w-full flex-col items-center justify-center bg-secondary/50 px-6 lg:w-1/2 lg:px-12">
         <div className="absolute left-8 top-8">
           <div className="flex items-center space-x-2">
             <BarChartHorizontal className="h-6 w-6 text-primary" />
@@ -19,29 +22,44 @@ const SignInPage = () => {
             appearance={{
               elements: {
                 formButtonPrimary:
-                  "bg-primary hover:bg-primary/90 text-primary-foreground transition-colors !border-0",
-                card: "shadow-none",
-                headerTitle: "text-2xl font-bold",
+                  "bg-primary hover:bg-primary/90 text-primary-foreground transition-colors border-0 ring-0 outline-0",
+                card: "rounded-lg shadow-md bg-card text-card-foreground", // Form card styles
+                headerTitle: "text-2xl font-bold text-secondary-foreground",
                 headerSubtitle: "text-muted-foreground",
                 socialButtonsBlockButton:
-                  "border border-input hover:bg-accent transition-colors",
+                  "border border-input hover:bg-accent transition-colors text-foreground bg-secondary/50 hover:bg-secondary/80",
                 socialButtonsBlockButtonText: "text-foreground",
                 formFieldInput:
-                  "h-10 bg-background border border-input focus:ring-2 focus:ring-primary focus:border-primary",
+                  "h-10 bg-secondary/50  border border-input focus:ring-2 focus:ring-primary focus:border-primary text-foreground",
                 footerActionLink: "text-primary hover:text-primary/90",
                 dividerLine: "bg-border",
                 dividerText: "text-muted-foreground",
                 formFieldLabel: "text-foreground font-medium",
               },
-              layout: {
-                socialButtonsPlacement: "bottom",
+              variables: {
+                colorPrimary:
+                  theme === "dark"
+                    ? "hsl(24.6 95% 53.1%)"
+                    : "hsl(20.5 90.2% 48.2%)",
+                colorBackground:
+                  theme === "dark" ? "hsl(20 14.3% 4.1%)" : "hsl(0 0% 100%)",
+                colorText:
+                  theme === "dark"
+                    ? "hsl(60 9.1% 97.8%)"
+                    : "hsl(20 14.3% 4.1%)",
+                colorInputBackground:
+                  theme === "dark" ? "hsl(12 6.5% 20%)" : "hsl(60 4.8% 95.9%)",
+                colorInputText:
+                  theme === "dark"
+                    ? "hsl(60 9.1% 97.8%)"
+                    : "hsl(20 14.3% 4.1%)",
               },
             }}
           />
         </div>
       </div>
 
-      <div className="hidden w-1/2 flex-col justify-center bg-secondary/50 px-12 lg:flex">
+      <div className="hidden w-1/2 flex-col justify-center px-12 lg:flex">
         <div className="max-w-lg">
           <h1 className="mb-4 text-3xl font-bold">
             GitHub Analytics Made Simple

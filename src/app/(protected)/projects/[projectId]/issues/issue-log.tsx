@@ -1,5 +1,6 @@
 "use client";
 import AvatarGroup from "@/components/avatar-group";
+import DescriptionRenderer from "@/components/decription-text";
 import HighlightBackticks from "@/components/highlight-text";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -28,11 +29,13 @@ import {
   CheckCircle2,
   CircleAlertIcon,
   CircleDotIcon,
+  Clock,
   ExternalLink,
   Github,
   Search,
-  Timer,
+  X,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import React, { useState } from "react";
 
@@ -168,6 +171,8 @@ const TabCustomContent = ({
   project,
   tabName,
 }: TabCustomContentProps) => {
+  const { theme } = useTheme();
+
   if (tabName !== "all") {
     issues = issues.filter((issue) => issue.state === tabName);
   }
@@ -177,7 +182,7 @@ const TabCustomContent = ({
       {issues.map((issue) => (
         <div className="mb-5" key={issue.id}>
           <Card className="rounded-md">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between pb-5">
               <div className="w-fit">
                 <CardTitle className="flex items-center justify-between gap-x-3">
                   <div className="flex items-center gap-x-3">
@@ -220,33 +225,47 @@ const TabCustomContent = ({
                       </Badge>
                     )}
                   </div>
-                  <div className="text-xs text-secondary-foreground">
+                </CardTitle>
+                <CardDescription className="mt-2 flex items-center gap-x-2 text-secondary-foreground/70">
+                  <div className="text-xs">
                     <span className="inline-flex items-center gap-x-1">
-                      <Timer className="ml-1 size-4" /> Issue created{" "}
+                      <Clock className="ml-1 size-4" /> Issue created{" "}
                       {formatRelativeDate(issue.createdAt)}
                     </span>
                   </div>
-                </CardTitle>
+                  {issue.closedAt && (
+                    <div className="text-xs">
+                      <span className="inline-flex items-center gap-x-1">
+                        <X className="ml-1 size-4" /> Issue Closed{" "}
+                        {formatRelativeDate(issue.closedAt)}
+                      </span>
+                    </div>
+                  )}
+                </CardDescription>
 
                 <div className="flex flex-wrap items-center gap-x-2">
-                  {issue.label &&
-                    issue.label?.length > 0 &&
-                    issue?.label?.map((label) => {
-                      return (
-                        <Badge
-                          key={label.id}
-                          className="my-2"
-                          variant={"outline"}
-                          style={{
-                            borderRadius: 5,
-                            color: darkenColor(label.color!),
-                            borderColor: darkenColor(label.color!),
-                          }}
-                        >
-                          {label.name}
-                        </Badge>
-                      );
-                    })}
+                  {issue?.label?.map((label) => {
+                    return (
+                      <Badge
+                        key={label.id}
+                        className="my-2"
+                        variant={"outline"}
+                        style={{
+                          borderRadius: 5,
+                          color:
+                            theme === "light"
+                              ? darkenColor(label.color!)
+                              : label.color!,
+                          borderColor:
+                            theme === "light"
+                              ? darkenColor(label.color!)
+                              : label.color!,
+                        }}
+                      >
+                        {label.name}
+                      </Badge>
+                    );
+                  })}
                 </div>
               </div>
               {issue.state === "closed" && (
@@ -279,9 +298,7 @@ const TabCustomContent = ({
             </CardHeader>
             {(issue.description || (issue.assignees?.length ?? 0) > 0) && (
               <CardContent>
-                <CardDescription className="text-justify text-secondary-foreground/80">
-                  <HighlightBackticks text={issue.description ?? ""} isDesc />
-                </CardDescription>
+                <DescriptionRenderer description={issue.description ?? ""} />
                 {(issue.assignees?.length ?? 0) > 0 && (
                   <div className="mt-2 inline-flex items-center gap-x-2">
                     <p className="text-xs text-secondary-foreground/70">

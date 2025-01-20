@@ -25,7 +25,7 @@ const prepareChartData = (
 ) => {
   const allPrs = gropedPrs.flatMap((group) => group.items || []);
 
-  const createdPrs = allPrs.filter((item) => item.state === "open").length;
+  const open = allPrs.filter((item) => item.state === "open").length;
   const closedPrs = allPrs.filter(
     (pr) => pr.state === "closed" && pr.mergedAt === null,
   ).length;
@@ -33,8 +33,8 @@ const prepareChartData = (
 
   return [
     {
-      state: "created",
-      prs: createdPrs,
+      state: "open",
+      prs: open,
       fill: "var(--color-created)",
     },
     {
@@ -52,7 +52,7 @@ const prepareChartData = (
 
 const chartConfig = {
   created: {
-    label: "Created PRs",
+    label: "Open PRs",
     color: "rgb(34 197 94 / var(--tw-text-opacity, 1))",
   },
   merged: {
@@ -149,10 +149,10 @@ const PrsSummaryPieChart = ({ groupedPrs }: PrsSummaryPieChartProps) => {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 text-center font-medium leading-none">
-          Showing the open, closed and merged pull requests for the project.
+          Pull Requests Summary
         </div>
         <div className="text-center leading-none text-muted-foreground">
-          Showing total pull requests for the last 6 months
+          Showing the open, closed and merged pull requests for the project
         </div>
       </CardFooter>
     </Card>

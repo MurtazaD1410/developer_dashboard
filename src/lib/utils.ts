@@ -64,39 +64,6 @@ export function getRelativeTime(date: Date): string {
   }
 }
 
-export const calculateTrend = (
-  chartData: { month: string; items: number | undefined }[],
-) => {
-  const currentMonth = chartData[5]?.items || 0;
-  const previousMonth = chartData[4]?.items || 0;
-
-  // Calculate percentage difference
-  const percentageDifference = calculatePercentageDifference(
-    currentMonth,
-    previousMonth,
-  );
-
-  return {
-    trend: Math.abs(percentageDifference),
-    isPositive: percentageDifference > 0,
-  };
-};
-
-// Helper function to calculate percentage difference
-export const calculatePercentageDifference = (
-  current: number,
-  previous: number,
-): number => {
-  // Handle case where previous month is 0
-  if (previous === 0) {
-    return current > 0 ? 100 : 0;
-  }
-
-  const difference = current - previous;
-  const percentageDifference = (difference / previous) * 100;
-  return Math.round(percentageDifference * 100) / 100; // Rounds to 2 decimal places
-};
-
 export const darkenColor = (color: string, amount = 0.2) => {
   // Remove the hash if it exists
   color = color.replace("#", "");
@@ -125,3 +92,16 @@ export const darkenColor = (color: string, amount = 0.2) => {
 
   return darkerColor;
 };
+
+export function generateInviteCode(length: number) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdZabcdefghijklmnopqrstuvwxy0123456789";
+
+  let result = "";
+
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+
+  return result;
+}

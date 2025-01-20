@@ -87,7 +87,7 @@ export const groupIssuesByDateRange = (issues: GitHubIssue[]) => {
 
   const result = monthsInRange.map((month) => ({
     month,
-    items: groupedIssues[month],
+    items: groupedIssues[month] ?? [],
   }));
 
   return result.reverse();

@@ -21,7 +21,8 @@ const PRICES = {
 
 type TierType = keyof typeof PRICES;
 
-export async function createCheckoutSession(tier: UserTier) {
+export async function createCheckoutSession(tier: UserTier, baseUrl: string) {
+  console.log(baseUrl);
   try {
     const { userId } = await auth();
 
@@ -60,8 +61,8 @@ export async function createCheckoutSession(tier: UserTier) {
         },
       ],
       mode: "subscription",
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/create`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing`,
+      success_url: `${baseUrl}/create`,
+      cancel_url: `${baseUrl}/billing`,
       client_reference_id: userId.toString(),
       metadata: {
         tier,
