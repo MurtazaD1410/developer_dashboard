@@ -22,9 +22,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { BugIcon, PlusCircle } from "lucide-react";
 
+import BasicIssuesSummary from "./issues-summary-basic";
+import AdvancedIssuesSummary from "./issues-summary-advanced";
+import AdvancedIssuesSummaryPlaceholder from "./issues-summary-advanced-placeholder";
+
+import IssueResolutionDistributionBarChart from "./issue-resolution-time-distribution";
+import IssueComplexityDistributionBarChart from "./issue-complexity-bar-chart";
+import IssueComplexityDistributionPlaceholderBarChart from "./issue-complexity-bar-chart-placeholder";
+import IssueResolutionDistributionPlaceholderBarChart from "./issue-resolution-time-distribution-placeholder";
+
 const IssuesPage = () => {
   const { projectId, isLoading, isError } = useProject();
   const [page, setPage] = useState(1);
+  const { data: user } = api.user.getUser.useQuery();
   const [itemCount, setItemCount] = useState<number>(25);
   const { data, isLoading: issuesLoading } = api.project.getIssues.useQuery({
     projectId,
@@ -72,10 +82,6 @@ const IssuesPage = () => {
     );
   }
 
-  // if (!issuesLoading && !issues) {
-  //   return <div className="">No Issues to list</div>;
-  // }
-
   let groupedIssues: { month: string; items: GitHubIssue[] | undefined }[] = [];
 
   if (issues) groupedIssues = groupIssuesByDateRange(issues);
@@ -84,11 +90,21 @@ const IssuesPage = () => {
     issues &&
     groupedIssues && (
       <div className="flex flex-col gap-5">
-        <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
-          <MonthlyIssuesAreaChart
+        <BasicIssuesSummary groupedIssues={groupedIssues} issues={issues} />
+        {user?.tier === "basic" && <AdvancedIssuesSummaryPlaceholder />}
+        {user?.tier !== "basic" && (
+          <AdvancedIssuesSummary
             groupedIssues={groupedIssues}
-            currentTab={chartDataTabName}
+            issues={issues}
           />
+        )}
+        <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+          <div className="lg:col-span-2 2xl:col-span-1">
+            <MonthlyIssuesAreaChart
+              groupedIssues={groupedIssues}
+              currentTab={chartDataTabName}
+            />
+          </div>
           <IssuesSummaryPieChart groupedIssues={groupedIssues} />
           <IssueLabelsBarChart
             issues={issues}
@@ -96,6 +112,20 @@ const IssuesPage = () => {
             startMonth={groupedIssues[groupedIssues.length - 1]?.month ?? ""}
             endMonth={groupedIssues[0]?.month ?? ""}
           />
+          {user?.tier === "basic" ? (
+            <IssueComplexityDistributionPlaceholderBarChart />
+          ) : (
+            <IssueComplexityDistributionBarChart
+              groupedIssues={groupedIssues}
+            />
+          )}
+          {user?.tier === "basic" ? (
+            <IssueResolutionDistributionPlaceholderBarChart />
+          ) : (
+            <IssueResolutionDistributionBarChart
+              groupedIssues={groupedIssues}
+            />
+          )}
         </div>
         <IssueLog
           issues={issues}

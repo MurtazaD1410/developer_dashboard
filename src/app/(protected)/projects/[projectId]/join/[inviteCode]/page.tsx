@@ -1,17 +1,29 @@
 import { db } from "@/server/db";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import React from "react";
 
 interface JoinHandlerProps {
-  params: Promise<{ projectId: string }>;
+  params: Promise<{ projectId: string; inviteCode: string }>;
 }
 
 const JoinHandler = async ({ params }: JoinHandlerProps) => {
-  const { projectId } = await params;
+  const { projectId, inviteCode } = await params;
   const { userId } = await auth();
 
   if (!userId) return redirect("/sign-in");
+
+  const project = await db.project.findUnique({
+    where: {
+      id: projectId,
+    },
+  });
+
+  if (!project) return redirect("/projects");
+
+  if (inviteCode !== project.inviteCode) {
+    throw new Error("Invite code has expired");
+  }
+
   const dbUser = await db.user.findUnique({
     where: {
       id: userId,
@@ -32,14 +44,6 @@ const JoinHandler = async ({ params }: JoinHandlerProps) => {
     });
   }
 
-  const project = await db.project.findUnique({
-    where: {
-      id: projectId,
-    },
-  });
-
-  if (!project) return redirect("/projects");
-
   try {
     await db.userToProject.create({
       data: {
@@ -51,7 +55,7 @@ const JoinHandler = async ({ params }: JoinHandlerProps) => {
     console.log("user already in project");
   }
 
-  return redirect(`/projects/${projectId}/dashboard`);
+  return (window.location.href = `/projects/${projectId}/dashboard`);
 };
 
 export default JoinHandler;

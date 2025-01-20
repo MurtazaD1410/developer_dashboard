@@ -1,15 +1,6 @@
 "use client";
 
-import { TrendingDown, TrendingUp } from "lucide-react";
-import {
-  AreaChart,
-  Area,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { AreaChart, Area, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -117,9 +108,9 @@ const MonthlyPrsAreaChart = ({
   const chartData = prepareChartData(groupedPrs, currentTab);
 
   return (
-    <Card>
+    <Card className="rounded-md">
       <CardHeader>
-        <CardTitle>Bar Chart - Pull Requests</CardTitle>
+        <CardTitle>Area Chart - Monthly Pull Request Statistics</CardTitle>
         <CardDescription>{`${chartData?.[0]?.month} - ${chartData?.[chartData.length - 1]?.month}`}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -176,10 +167,10 @@ const MonthlyPrsAreaChart = ({
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          Monthly Pull Request Statistics
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing total statistics for the selected timeframe
         </div>
       </CardFooter>
     </Card>

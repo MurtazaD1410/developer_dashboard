@@ -13,7 +13,7 @@ const ArchiveButton = () => {
   const { data: userRole } = api.user.getUserRole.useQuery({ projectId });
 
   const [DeleteDialog, confirmDelete] = useConfirm(
-    "Delete Project",
+    "Leave Project",
     "This action cannot be undone.",
     "destructive",
   );

@@ -23,6 +23,11 @@ import {
 } from "@/components/ui/pagination";
 import { GitPullRequest, PlusCircle, SearchCodeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PrSizeDistributionBarChart from "./pr-size-distribution-bar-chart";
+import AvgReviewTimeLineChart from "./avg-review-time-line-chart";
+import PrBasicSummary from "./pr-summary-basic";
+import AvgReviewTimeLineChartPlaceholder from "./avg-review-time-line-chart-placeholder";
+import PrSizeDistributionBarChartPlaceholder from "./pr-size-distribution-bar-chart-placeholder";
 
 const PullRequestsPage = () => {
   const { projectId, isLoading, isError } = useProject();
@@ -34,6 +39,7 @@ const PullRequestsPage = () => {
       page,
       limit: itemCount,
     });
+  const { data: user } = api.user.getUser.useQuery();
   const [chartDataTabName, setChartDataTabName] = useState<string>("all");
 
   if (isLoading || prsIsLoading) return <LoadingPage />;
@@ -76,11 +82,14 @@ const PullRequestsPage = () => {
     prs &&
     groupedPrs && (
       <div className="flex flex-col gap-5">
+        <PrBasicSummary groupedPrs={groupedPrs} />
         <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
-          <MonthlyPrsAreaChart
-            groupedPrs={groupedPrs}
-            currentTab={chartDataTabName}
-          />
+          <div className="lg:col-span-2 2xl:col-span-1">
+            <MonthlyPrsAreaChart
+              groupedPrs={groupedPrs}
+              currentTab={chartDataTabName}
+            />
+          </div>
           <PrsSummaryPieChart groupedPrs={groupedPrs} />
           <PrLabelsBarChart
             prs={prs}
@@ -88,6 +97,17 @@ const PullRequestsPage = () => {
             startMonth={groupedPrs[groupedPrs.length - 1]?.month ?? ""}
             endMonth={groupedPrs[0]?.month ?? ""}
           />
+
+          {user?.tier === "basic" ? (
+            <AvgReviewTimeLineChartPlaceholder />
+          ) : (
+            <AvgReviewTimeLineChart groupedPrs={groupedPrs} />
+          )}
+          {user?.tier === "basic" ? (
+            <PrSizeDistributionBarChartPlaceholder />
+          ) : (
+            <PrSizeDistributionBarChart groupedPrs={groupedPrs} />
+          )}
         </div>
         <PrLog
           prs={prs}

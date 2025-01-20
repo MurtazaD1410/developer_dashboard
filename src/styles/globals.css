@@ -83,3 +83,44 @@
     @apply bg-background text-foreground;
   }
 }
+
+.table-wrapper {
+  margin-bottom: 20px;
+}
+
+.styled-table {
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.styled-table th,
+.styled-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.image-container {
+  margin: 10px 0;
+}
+
+.responsive-image {
+  width: 400px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.markdown-link {
+  color: #0070f3;
+  text-decoration: underline;
+}
+
+/* .block-code {
+  @apply text-secondary-foreground/80;
+  font-size: 14;
+  display: block;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+  font-family: monospace;
+} */

@@ -23,9 +23,25 @@ export enum UserTier {
   premium = "premium",
 }
 
+export enum UserRole {
+  admin = "ADMIN",
+  member = "MEMBER",
+}
+
+export interface User {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  imageUrl: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+}
+
 export interface Project {
   id: string;
   name: string;
+  inviteCode: string;
   githubUrl: string;
   createdAt: Date;
   updatedAt: Date;
@@ -46,16 +62,11 @@ export interface GitHubRepository {
 }
 
 export interface GitHubCommit {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  projectId: string;
-  commitMessage: string;
-  commitHash: string;
-  commitAuthorName: string;
-  commitAuthorAvatar: string;
-  commitDate: Date;
+  sha: string;
+  author: GitHubUserProfile;
+  commitDate: Date | null;
   summary: string;
+  message: string;
 }
 
 export interface GitHubIssue {
@@ -63,6 +74,7 @@ export interface GitHubIssue {
   number: number;
   state: string;
   title: string;
+  comments: number;
   description: string | null;
   creator: GitHubUserProfile;
   createdAt: Date;
@@ -87,4 +99,13 @@ export interface GitHubPullRequest {
   assignees?: GitHubUserProfile[] | null;
   closedAt: Date | null;
   mergedAt: Date | null;
+  commentsCount: number;
+  reviewCommentsCount: number;
+  additions: number;
+  deletions: number;
+  changedFiles: number;
+  draft: boolean | undefined;
+  mergeable: boolean | null;
+  autoMerge: boolean | null;
+  maintainerCanModify: boolean;
 }

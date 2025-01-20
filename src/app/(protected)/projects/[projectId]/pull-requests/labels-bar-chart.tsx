@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import _ from "lodash";
 import {
   Card,
@@ -144,7 +144,7 @@ const PrLabelsBarChart = ({
   );
 
   return (
-    <Card>
+    <Card className="rounded-md">
       <CardHeader>
         <CardTitle>Bar Chart - Pull Request Labels</CardTitle>
         <CardDescription>
@@ -164,6 +164,8 @@ const PrLabelsBarChart = ({
               left: 50,
             }}
           >
+            <CartesianGrid horizontal={false} />
+
             <YAxis
               dataKey="label"
               type="category"
@@ -196,7 +198,15 @@ const PrLabelsBarChart = ({
                 );
               }}
             />
-            <XAxis dataKey="prs" type="number" hide />
+            <XAxis
+              dataKey="prs"
+              type="number"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickCount={5}
+              domain={["auto", "dataMax + 2"]}
+            />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
@@ -207,10 +217,10 @@ const PrLabelsBarChart = ({
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          Distribution of pull requests for different labels
+          Pull Request Labels
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total pull requests for the last 6 months
+          Distribution of pull requests for different labels
         </div>
       </CardFooter>
     </Card>
