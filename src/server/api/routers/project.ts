@@ -4,7 +4,7 @@ import {
   getIssues,
   getPullRequests,
   getRepository,
-  pollCommits,
+  getCommits,
 } from "@/lib/github";
 import {
   type GitHubIssue,
@@ -12,9 +12,10 @@ import {
   type Project,
   type GitHubPullRequest,
   type GitHubRepository,
+  UserRole,
 } from "@/types/types";
 import { checkCredits } from "@/lib/github-loader";
-// import { indexGithubRepo } from "@/lib/github-loader";
+import { generateInviteCode } from "@/lib/utils";
 
 export const projectRouter = createTRPCRouter({
   createProject: protectedProcedure
@@ -22,6 +23,7 @@ export const projectRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         githubUrl: z.string(),
+        inviteCode: z.string(),
         defaultBranch: z.string().optional(),
         githubToken: z.string().optional(),
       }),
@@ -45,8 +47,6 @@ export const projectRouter = createTRPCRouter({
         },
       });
 
-      console.log(projects);
-
       if ((projects.length ?? 0) >= 3 && user?.tier === "basic") {
         throw new Error("Please upgrade your plan to add more projects");
       }
@@ -61,6 +61,7 @@ export const projectRouter = createTRPCRouter({
         data: {
           name: input.name,
           githubUrl: input.githubUrl,
+          inviteCode: input.inviteCode,
           userToProject: {
             create: {
               userId: ctx.user.userId!,
@@ -69,10 +70,49 @@ export const projectRouter = createTRPCRouter({
           },
         },
       });
-
-      await pollCommits(project.id);
-
       return project;
+    }),
+
+  resetInviteLink: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(), // Project ID for which the invite link needs to be reset
+      }),
+    )
+    .mutation(async ({ ctx, input }): Promise<Project> => {
+      // Check if the project exists and the user is part of it
+      const userProject = await ctx.db.userToProject.findUnique({
+        where: {
+          projectId_userId: {
+            projectId: input.projectId,
+            userId: ctx.user.userId!,
+          },
+        },
+      });
+
+      if (!userProject) {
+        throw new Error("You are not part of this project.");
+      }
+
+      // Ensure the user has permission to reset the invite link (admin only)
+      if (userProject.role !== "ADMIN") {
+        throw new Error("You are not authorized to reset the invite link.");
+      }
+
+      // Generate a new invite code (you can use a UUID or a custom logic)
+      const newInviteCode = generateInviteCode(6); // Replace with your own invite code generation logic
+
+      // Update the invite code for the project
+      const updatedProject = await ctx.db.project.update({
+        where: {
+          id: input.projectId,
+        },
+        data: {
+          inviteCode: newInviteCode,
+        },
+      });
+
+      return updatedProject;
     }),
 
   getProjects: protectedProcedure.query(async ({ ctx }): Promise<Project[]> => {
@@ -120,6 +160,64 @@ export const projectRouter = createTRPCRouter({
       return project;
     }),
 
+  leaveProject: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }): Promise<Project> => {
+      const userRole = await ctx.db.userToProject.findUnique({
+        where: {
+          projectId_userId: {
+            projectId: input.projectId,
+            userId: ctx.user.userId!,
+          },
+        },
+        select: {
+          role: true,
+        },
+      });
+
+      if (!userRole) {
+        throw new Error("User not part of this project.");
+      }
+
+      const adminCount = await ctx.db.userToProject.count({
+        where: {
+          projectId: input.projectId,
+          role: "ADMIN",
+        },
+      });
+
+      if (userRole.role === "ADMIN" && adminCount <= 1) {
+        throw new Error(
+          "Admins cannot leave the project. Promote another user to admin first.",
+        );
+      }
+
+      // Remove the user from the project
+      await ctx.db.userToProject.delete({
+        where: {
+          projectId_userId: {
+            projectId: input.projectId,
+            userId: ctx.user.userId!,
+          },
+        },
+      });
+
+      // Optionally, you can return the project after the user has left
+      const project = await ctx.db.project.findUnique({
+        where: { id: input.projectId },
+      });
+
+      if (!project) {
+        throw new Error("Project not found.");
+      }
+
+      return project;
+    }),
+
   getTeamMembers: protectedProcedure
     .input(
       z.object({
@@ -133,6 +231,120 @@ export const projectRouter = createTRPCRouter({
         },
         include: {
           user: true,
+        },
+        orderBy: {
+          role: "asc",
+        },
+      });
+    }),
+
+  changeMemberRole: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        userId: z.string(),
+        role: z.enum([UserRole.member, UserRole.admin]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userRole = await ctx.db.userToProject.findUnique({
+        where: {
+          projectId_userId: {
+            projectId: input.projectId,
+            userId: ctx.user.userId!,
+          },
+        },
+        select: {
+          role: true,
+        },
+      });
+
+      if (userRole?.role !== "ADMIN") {
+        throw new Error("Unauthorized");
+      }
+
+      const adminCount = await ctx.db.userToProject.count({
+        where: {
+          projectId: input.projectId,
+          role: "ADMIN",
+        },
+      });
+
+      if (input.role === "MEMBER" && adminCount <= 1) {
+        throw new Error("There must be at least one admin in the project.");
+      }
+
+      return await ctx.db.userToProject.update({
+        where: {
+          projectId_userId: {
+            projectId: input.projectId,
+            userId: input.userId,
+          },
+        },
+        data: {
+          role: input.role,
+        },
+      });
+    }),
+
+  removeMember: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Check if the current user is an admin in the project
+      const userRole = await ctx.db.userToProject.findUnique({
+        where: {
+          projectId_userId: {
+            projectId: input.projectId,
+            userId: ctx.user.userId!,
+          },
+        },
+        select: {
+          role: true,
+        },
+      });
+
+      if (userRole?.role !== "ADMIN") {
+        throw new Error("Unauthorized");
+      }
+
+      // Check if the user to be removed is an admin
+      const userToRemoveRole = await ctx.db.userToProject.findUnique({
+        where: {
+          projectId_userId: {
+            projectId: input.projectId,
+            userId: input.userId,
+          },
+        },
+        select: {
+          role: true,
+        },
+      });
+
+      // Count the number of admins in the project
+      const adminCount = await ctx.db.userToProject.count({
+        where: {
+          projectId: input.projectId,
+          role: "ADMIN",
+        },
+      });
+
+      // Prevent removal of the last admin
+      if (userToRemoveRole?.role === "ADMIN" && adminCount <= 1) {
+        throw new Error("There must be at least one admin in the project.");
+      }
+
+      // Remove the user from the project (delete the userToProject relationship)
+      return await ctx.db.userToProject.delete({
+        where: {
+          projectId_userId: {
+            projectId: input.projectId,
+            userId: input.userId,
+          },
         },
       });
     }),
@@ -151,19 +363,27 @@ export const projectRouter = createTRPCRouter({
         throw new Error("Error fetching issues");
       }
     }),
+
   getCommits: protectedProcedure
     .input(
       z.object({
         projectId: z.string(),
+        page: z.number().optional().default(1),
+        limit: z.number().optional().default(15),
       }),
     )
     .query(async ({ ctx, input }): Promise<GitHubCommit[]> => {
-      pollCommits(input.projectId).then().catch(console.error);
-      return await ctx.db.commit.findMany({
-        where: {
+      try {
+        const data = await getCommits({
           projectId: input.projectId,
-        },
-      });
+          page: input.page,
+          limit: input.limit,
+        });
+
+        return data;
+      } catch (error) {
+        throw new Error("Error fetching commits");
+      }
     }),
 
   getIssues: protectedProcedure
@@ -223,27 +443,4 @@ export const projectRouter = createTRPCRouter({
         }
       },
     ),
-
-  getMyCredits: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.user.findUnique({
-      where: { id: ctx.user.userId! },
-      select: {
-        credits: true,
-      },
-    });
-  }),
-
-  checkCredits: protectedProcedure
-    .input(
-      z.object({ gihtubUrl: z.string(), githubToken: z.string().optional() }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const fileCount = await checkCredits(input.gihtubUrl, input.githubToken);
-      const userCredits = await ctx.db.user.findUnique({
-        where: { id: ctx.user.userId! },
-        select: { credits: true },
-      });
-
-      return { fileCount, userCredits: userCredits?.credits || 0 };
-    }),
 });

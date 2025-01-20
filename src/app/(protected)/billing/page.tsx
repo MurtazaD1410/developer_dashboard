@@ -97,20 +97,12 @@ const PricingPage = () => {
   );
 
   const canCancelSubscription = async () => {
-    if (
-      (user?.tier === "premium" || user?.tier === "pro") &&
-      user.userToProject.length > 3
-    ) {
-      toast.error("Please delete some projects to cancel this subscription!");
-      return;
-    }
-
     const ok = await confirmDelete();
 
     if (!ok) return;
 
     cancelSubscription.mutate(
-      { tier: tiers[0]?.metaname! as UserTier },
+      { tier: UserTier.basic },
       {
         onSuccess: () => {
           toast.success("Subscription has been cancelled");
@@ -198,7 +190,10 @@ const PricingPage = () => {
                 variant={tier.popular ? "default" : "outline"}
                 onClick={() => {
                   if (tier.price !== "Free") {
-                    createCheckoutSession(tier.metaname);
+                    createCheckoutSession(
+                      tier.metaname,
+                      window.location.origin,
+                    );
                   }
                 }}
                 disabled={user?.tier === tier.metaname}

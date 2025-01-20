@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import _ from "lodash";
 import {
   Card,
@@ -117,7 +117,7 @@ const IssueLabelsBarChart = ({
   );
 
   return (
-    <Card>
+    <Card className="rounded-md">
       <CardHeader>
         <CardTitle>Bar Chart - Issue Labels</CardTitle>
         <CardDescription>
@@ -137,6 +137,7 @@ const IssueLabelsBarChart = ({
               left: 50,
             }}
           >
+            <CartesianGrid horizontal={false} />
             <YAxis
               dataKey="label"
               type="category"
@@ -180,10 +181,10 @@ const IssueLabelsBarChart = ({
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          Distribution of issues for different labels
+          Issue Label Distribution
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total issues for the last 6 months
+          Breakdown of issues by assigned labels showing project focus areas
         </div>
       </CardFooter>
     </Card>

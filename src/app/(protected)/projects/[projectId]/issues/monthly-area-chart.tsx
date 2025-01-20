@@ -1,6 +1,5 @@
 "use client";
 
-import { TrendingDown, TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -18,7 +17,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { type GitHubIssue } from "@/types/types";
-import { calculateTrend } from "@/lib/utils";
 
 const prepareChartData = (
   groupedIssues: {
@@ -67,10 +65,9 @@ const MonthlyIssuesAreaChart = ({
   currentTab,
 }: MonthlyIssueChartProps) => {
   const chartData = prepareChartData(groupedIssues, currentTab);
-  const { trend, isPositive } = calculateTrend(chartData);
 
   return (
-    <Card className="rounded-md">
+    <Card className="h-full rounded-md">
       <CardHeader>
         <CardTitle>Area Chart - Issues</CardTitle>
         <CardDescription>{`${chartData?.[0]?.month} - ${chartData?.[chartData.length - 1]?.month}`}</CardDescription>
@@ -121,15 +118,11 @@ const MonthlyIssuesAreaChart = ({
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          Trending {isPositive ? "up" : "down"} by {trend}% this month{" "}
-          {isPositive ? (
-            <TrendingUp className="h-4 w-4" />
-          ) : (
-            <TrendingDown className="h-4 w-4" />
-          )}
+          Issues Over Time
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total Issues for the last 6 months
+          Tracking the volume of issues created and resolved across the project
+          timeline
         </div>
       </CardFooter>
     </Card>

@@ -18,10 +18,12 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { cn, getRelativeTime } from "@/lib/utils";
 import { type Url } from "next/dist/shared/lib/router/router";
 import LoadingPage from "@/app/(protected)/loading";
-import ArchiveButton from "./archive-button";
+import LeaveProjectButton from "./leave-project-button";
 import InviteButton from "./invite-button";
 import TeamMembers from "./team-members";
 import useRefetch from "@/hooks/use-refetch";
+import ArchiveButton from "./archive-button";
+import { type UserTier } from "@/types/types";
 
 const DashboardPage = () => {
   const { project, projectId, isLoading, isError } = useProject();
@@ -30,6 +32,8 @@ const DashboardPage = () => {
     projectId,
   });
   const { data: userRole } = api.user.getUserRole.useQuery({ projectId });
+  const { data: user } = api.user.getUser.useQuery();
+  const { data: members } = api.project.getTeamMembers.useQuery({ projectId });
 
   if (isLoading) <LoadingPage />;
 
@@ -44,6 +48,20 @@ const DashboardPage = () => {
   if (isError) {
     throw new Error("Error fetching product");
   }
+
+  const canInviteMembers = () => {
+    if (user?.tier === "basic" && (members?.length ?? 0) >= 3) {
+      return false;
+    }
+    if (user?.tier === "pro" && (members?.length ?? 0) >= 5) {
+      return false;
+    }
+    if (user?.tier === "premium" && (members?.length ?? 0) >= 10) {
+      return false;
+    }
+
+    return true;
+  };
 
   return (
     project && (
@@ -70,7 +88,13 @@ const DashboardPage = () => {
           <div className="h-4"></div>
           <div className="flex items-center gap-4">
             <TeamMembers />
-            <InviteButton />
+            {userRole?.role === "MEMBER" && <LeaveProjectButton />}
+            {userRole?.role === "ADMIN" && (
+              <InviteButton
+                canInviteMembers={canInviteMembers()}
+                tier={user?.tier as UserTier}
+              />
+            )}
             {userRole?.role === "ADMIN" && <ArchiveButton />}
           </div>
         </div>

@@ -7,17 +7,15 @@ import { AppSideBar } from "./app-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
 import useProject from "@/hooks/use-project";
 import { useParams, usePathname, redirect } from "next/navigation";
+import { useTheme } from "next-themes";
 
 interface SidebarProps {
   children: React.ReactNode;
 }
 
 const Sidebar = ({ children }: SidebarProps) => {
-  const userButtonAppearance = {
-    elements: {
-      userButtonAvatarBox: "w-12 h-12",
-    },
-  };
+  const { theme } = useTheme();
+
   const { projects, isLoading } = useProject();
   const params = useParams();
   const pathname = usePathname();
@@ -73,7 +71,32 @@ const Sidebar = ({ children }: SidebarProps) => {
           {/* search bar */}
           <div className="ml-auto" />
           <ModeToggle />
-          <UserButton appearance={userButtonAppearance} />
+          <UserButton
+            appearance={{
+              elements: {
+                userButtonAvatarBox: "w-12 h-12",
+                // Dropdown container
+                userButtonPopoverCard: "bg-card text-card-foreground shadow-lg",
+                // Dropdown items (buttons)
+                userButtonPopoverActionButton:
+                  "hover:bg-accent hover:text-accent-foreground transition-colors text-secondary-foreground/80",
+                // Dropdown item icons
+                userButtonPopoverActionButtonIcon: "text-muted-foreground",
+                // Dropdown sign-out button
+                userButtonPopoverFooter:
+                  "border-t border-border bg-card text-muted-foreground",
+              },
+              variables: {
+                // Apply theme-specific colors
+                colorPrimary:
+                  theme === "dark"
+                    ? "hsl(24.6 95% 53.1%)"
+                    : "hsl(20.5 90.2% 48.2%)",
+                colorBackground:
+                  theme === "dark" ? "hsl(20 14.3% 4.1%)" : "hsl(0 0% 100%)",
+              },
+            }}
+          />
         </div>
         <div className="h-4"></div>
         {/* main content */}

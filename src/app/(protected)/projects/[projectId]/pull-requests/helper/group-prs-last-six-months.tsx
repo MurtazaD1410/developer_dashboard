@@ -22,7 +22,7 @@ export const groupPrsByLastSixMonths = (prs: GitHubPullRequest[]) => {
       year: "numeric",
     });
 
-    // Only add if it's within the last 6 months
+    // Only add if it's within the given time frame
     if (lastSixMonths.includes(monthYear)) {
       if (!groupedPrs[monthYear]) {
         groupedPrs[monthYear] = [];

@@ -1,4 +1,5 @@
 "use client";
+import LoadingPage from "@/app/(protected)/loading";
 import HighlightBackticks from "@/components/highlight-text";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,18 +13,16 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 const CommitLog = () => {
-  const { projectId, project } = useProject();
-  const { data: commits } = api.project.getCommits.useQuery({ projectId });
+  const { projectId, project, isLoading } = useProject();
+  const { data: commits, isLoading: commitIsLoading } =
+    api.project.getCommits.useQuery({ projectId });
   const [searchQuery, setSearchQuery] = useState("");
+
+  if (isLoading || commitIsLoading) return <LoadingPage />;
 
   if (!commits || commits?.length <= 0) {
     return <h1>No commits to list</h1>;
   }
-
-  const sortedCommits = commits.sort(
-    (a: GitHubCommit, b: GitHubCommit) =>
-      new Date(b.commitDate).getTime() - new Date(a.commitDate).getTime(),
-  );
 
   const filterCommits = (commits: GitHubCommit[]) => {
     if (!searchQuery) return commits;
@@ -31,8 +30,8 @@ const CommitLog = () => {
     const query = searchQuery.toLowerCase();
     return commits.filter(
       (commit) =>
-        commit.commitMessage.toLowerCase().includes(query) ||
-        commit.commitHash.toString().includes(query),
+        commit.message.toLowerCase().includes(query) ||
+        commit.sha.toString().includes(query),
     );
   };
 
@@ -51,19 +50,19 @@ const CommitLog = () => {
           </div>
           {searchQuery && (
             <CardDescription className="inline-flex items-center">
-              {filterCommits(sortedCommits).length} results found for "
-              {searchQuery}" .
+              {filterCommits(commits).length} results found for "{searchQuery}"
+              .
             </CardDescription>
           )}
         </CardContent>
       </Card>
       <ul className="space-y-6">
-        {filterCommits(sortedCommits)?.map((commit, commitIdx) => {
+        {filterCommits(commits)?.map((commit, commitIdx) => {
           return (
-            <li key={commit.id} className="relative flex gap-x-4">
+            <li key={commit.sha} className="relative flex gap-x-4">
               <div
                 className={cn(
-                  commitIdx === filterCommits(sortedCommits).length - 1
+                  commitIdx === filterCommits(commits).length - 1
                     ? "h-6"
                     : "-bottom-6",
                   "absolute left-0 top-0 flex w-6 justify-center",
@@ -73,7 +72,7 @@ const CommitLog = () => {
               </div>
               <>
                 <img
-                  src={commit.commitAuthorAvatar}
+                  src={commit.author.userAvatar}
                   alt=""
                   className="relative mt-4 size-8 flex-none rounded-full bg-gray-50"
                 />
@@ -82,24 +81,26 @@ const CommitLog = () => {
                     <Link
                       className="py-0.5 text-xs leading-5 text-secondary-foreground"
                       target="_blank"
-                      href={`${project?.githubUrl}/commits/${commit.commitHash}`}
+                      href={`${project?.githubUrl}/commits/${commit.sha}`}
                     >
                       <span className="font-medium text-secondary-foreground">
-                        {commit.commitAuthorName}
+                        {commit.author.userName}
                       </span>{" "}
                       <span className="inline-flex items-center">
                         committed <ExternalLink className="ml-1 size-4" />
                       </span>
                     </Link>
-                    <div className="text-xs text-secondary-foreground">
-                      <span className="inline-flex items-center gap-x-1">
-                        <Timer className="ml-1 size-4" /> Committed{" "}
-                        {formatRelativeDate(commit.commitDate)}
-                      </span>
-                    </div>
+                    {commit.commitDate && (
+                      <div className="text-xs text-secondary-foreground">
+                        <span className="inline-flex items-center gap-x-1">
+                          <Timer className="ml-1 size-4" /> Committed{" "}
+                          {formatRelativeDate(commit.commitDate)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <span className="font-semibold">
-                    <HighlightBackticks text={commit.commitMessage} />
+                    <HighlightBackticks text={commit.message} />
                   </span>
                   <pre className="mt-2 whitespace-pre-wrap text-sm leading-6 text-secondary-foreground/80">
                     <HighlightBackticks text={commit.summary} isDesc />

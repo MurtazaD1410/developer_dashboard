@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import useProject from "@/hooks/use-project";
 import useRefetch from "@/hooks/use-refetch";
+import { generateInviteCode } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { Info, Loader } from "lucide-react";
 import Image from "next/image";
@@ -19,7 +20,7 @@ type FormInput = {
 };
 
 const CreatePageClient = () => {
-  const { register, handleSubmit, reset } = useForm<FormInput>();
+  const { register, handleSubmit } = useForm<FormInput>();
   const { projects } = useProject();
   const createProject = api.project.createProject.useMutation();
   const { data: user } = api.user.getUser.useQuery();
@@ -43,6 +44,7 @@ const CreatePageClient = () => {
       {
         githubUrl: data.repoUrl,
         name: data.projectName,
+        inviteCode: generateInviteCode(6),
         defaultBranch: data.branch,
         githubToken: data.githubToken,
       },
