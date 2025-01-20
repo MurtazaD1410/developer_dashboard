@@ -16,80 +16,73 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
-import { type GitHubIssue } from "@/types/types";
+import { type GitHubPullRequest } from "@/types/types";
 const prepareChartData = (
-  groupedIssues: {
+  gropedPrs: {
     month: string;
-    items: GitHubIssue[] | undefined;
+    items: GitHubPullRequest[] | undefined;
   }[],
 ) => {
-  const allIssues = groupedIssues.flatMap((group) => group.items || []);
+  const allPrs = gropedPrs.flatMap((group) => group.items || []);
 
-  const openIssues = allIssues.filter((issue) => issue.state === "open").length;
-  const closedIssues = allIssues.filter(
-    (issue) => issue.state === "closed",
+  const createdPrs = allPrs.filter((item) => item.state === "open").length;
+  const closedPrs = allPrs.filter(
+    (pr) => pr.state === "closed" && pr.mergedAt === null,
   ).length;
-  const dismissedIssues = allIssues.filter(
-    (issue) => issue.state === "dismissed",
-  ).length;
+  const mergedPrs = allPrs.filter((pr) => pr.mergedAt !== null).length;
 
   return [
     {
-      state: "open",
-      issues: openIssues,
-      fill: "var(--color-open)",
+      state: "created",
+      prs: createdPrs,
+      fill: "var(--color-created)",
     },
     {
       state: "closed",
-      issues: closedIssues,
+      prs: closedPrs,
       fill: "var(--color-closed)",
     },
     {
-      state: "dismissed",
-      issues: dismissedIssues,
-      fill: "var(--color-dismissed)",
+      state: "merged",
+      prs: mergedPrs,
+      fill: "var(--color-merged)",
     },
   ];
 };
 
 const chartConfig = {
-  issues: {
-    label: "Issues",
+  created: {
+    label: "Created PRs",
+    color: "rgb(34 197 94 / var(--tw-text-opacity, 1))",
   },
-  open: {
-    label: "Open",
-    color: "rgb(34 197 94 / var(--tw-text-opacity, 1))", // You might want to use green or your preferred color
+  merged: {
+    label: "Merged PRs",
+    color: "rgb(168 85 247 / var(--tw-text-opacity, 1))",
   },
   closed: {
-    label: "Closed",
-    color: "rgb(168 85 247 / var(--tw-text-opacity, 1))", // You might want to use red or your preferred color
-  },
-  dismissed: {
-    label: "Dismissed",
-    color: "rgb(245 158 11 / var(--tw-text-opacity, 1))",
+    label: "Closed PRs",
+    color: "rgb(239 68 68 / var(--tw-text-opacity, 1))",
   },
 } satisfies ChartConfig;
 
-interface IssuesSummaryPieChartProps {
-  groupedIssues: {
+interface PrsSummaryPieChartProps {
+  groupedPrs: {
     month: string;
-    items: GitHubIssue[] | undefined;
+    items: GitHubPullRequest[] | undefined;
   }[];
 }
 
-const IssuesSummaryPieChart = ({
-  groupedIssues,
-}: IssuesSummaryPieChartProps) => {
-  const chartData = prepareChartData(groupedIssues);
-  const totalIssues = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.issues, 0);
+const PrsSummaryPieChart = ({ groupedPrs }: PrsSummaryPieChartProps) => {
+  const chartData = prepareChartData(groupedPrs);
+  const totalPrs = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.prs, 0);
   }, [chartData]);
 
   return (
     <Card className="flex flex-col justify-between gap-0 rounded-md">
       <CardHeader className="items-center">
-        <CardTitle>Pie Chart - Issues Summary</CardTitle>
-        <CardDescription>{`${groupedIssues?.[5]?.month} - ${groupedIssues?.[0]?.month}`}</CardDescription>
+        <CardTitle>Pie Chart - Pull Requests Summary</CardTitle>
+        <CardDescription>{`${groupedPrs?.[5]?.month} - ${groupedPrs?.[0]?.month}`}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
         {!chartData.length && (
@@ -101,15 +94,13 @@ const IssuesSummaryPieChart = ({
               cursor={false}
               content={({ active, payload }) => {
                 if (active && payload && payload.length > 0) {
-                  const { state, issues } = payload[0]?.payload;
+                  const { state, prs } = payload[0]?.payload;
                   return (
                     <div className="rounded-md border bg-white p-2 shadow-sm">
                       <div className="text-xs font-semibold text-gray-700">
                         {state.charAt(0).toUpperCase() + state.slice(1)}
                       </div>
-                      <div className="text-xs text-gray-500">
-                        {issues} Issues
-                      </div>
+                      <div className="text-xs text-gray-500">{prs} Prs</div>
                     </div>
                   );
                 }
@@ -118,8 +109,8 @@ const IssuesSummaryPieChart = ({
             />
             <Pie
               data={chartData}
-              dataKey="issues"
-              nameKey="issues"
+              dataKey="prs"
+              nameKey="prs"
               innerRadius={60}
               strokeWidth={5}
             >
@@ -138,14 +129,14 @@ const IssuesSummaryPieChart = ({
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {totalIssues.toLocaleString()}
+                          {totalPrs.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Issues
+                          Pull Requests
                         </tspan>
                       </text>
                     );
@@ -158,14 +149,14 @@ const IssuesSummaryPieChart = ({
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 text-center font-medium leading-none">
-          Showing the open and closed issues for the project.
+          Showing the open, closed and merged pull requests for the project.
         </div>
         <div className="text-center leading-none text-muted-foreground">
-          Showing total issues for the last 6 months
+          Showing total pull requests for the last 6 months
         </div>
       </CardFooter>
     </Card>
   );
 };
 
-export default IssuesSummaryPieChart;
+export default PrsSummaryPieChart;

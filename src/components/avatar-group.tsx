@@ -1,12 +1,12 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { type AssigneeOrReviewer } from "@/types/types";
+import { type GitHubUserProfile } from "@/types/types";
 
 const AvatarGroup = ({
   users = [],
   limit = 3,
   remainingLabel = true,
 }: {
-  users?: AssigneeOrReviewer[] | null;
+  users?: GitHubUserProfile[] | null;
   limit: number;
   remainingLabel?: boolean;
 }) => {
@@ -21,12 +21,9 @@ const AvatarGroup = ({
     <div className="flex -space-x-4">
       {visibleUsers.map((user, i) => (
         <Avatar key={i} className="border-2 border-background">
-          <AvatarImage
-            src={user.assigneeOrReviewerAvatar ?? ""}
-            alt={user.assigneeOrReviewerUsername ?? ""}
-          />
+          <AvatarImage src={user.userAvatar ?? ""} alt={user.userName ?? ""} />
           <AvatarFallback>
-            {user.assigneeOrReviewerUsername?.[0]?.toUpperCase() ?? "U"}
+            {user.userName?.[0]?.toUpperCase() ?? "U"}
           </AvatarFallback>
         </Avatar>
       ))}

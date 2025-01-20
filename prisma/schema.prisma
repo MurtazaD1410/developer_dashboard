@@ -53,9 +53,9 @@ model Project {
   userToProject UserToProject[]
   Commit        Commit[]
   // SourceCodeEmbedding SourceCodeEmbedding[]
-  issue         Issue[]
-  Repository    Repository[]
-  PullRequest   PullRequest[]
+  // issue         Issue[]
+  // Repository    Repository[]
+  // PullRequest   PullRequest[]
 }
 
 // model SourceCodeEmbedding {
@@ -85,28 +85,28 @@ model UserToProject {
   @@unique([projectId, userId])
 }
 
-model Repository {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model Repository {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
+//   projectId String
+//   project   Project @relation(fields: [projectId], references: [id])
 
-  repoId            String            @unique
-  repoName          String
-  repoPrivate       Boolean
-  repoOwnerId       String
-  repoOwner         GitHubUserProfile @relation(fields: [repoOwnerId], references: [id])
-  repoDescription   String?
-  repoCreatedAt     DateTime
-  repoUpdatedAt     DateTime
-  repoTopics        String[]
-  repoOpenIssues    Int
-  repoDefaultBranch String
+//   repoId            String            @unique
+//   repoName          String
+//   repoPrivate       Boolean
+//   repoOwnerId       String
+//   repoOwner         GitHubUserProfile @relation(fields: [repoOwnerId], references: [id])
+//   repoDescription   String?
+//   repoCreatedAt     DateTime
+//   repoUpdatedAt     DateTime
+//   repoTopics        String[]
+//   repoOpenIssues    Int
+//   repoDefaultBranch String
 
-  hash String @unique
-}
+//   hash String @unique
+// }
 
 model Commit {
   id        String   @id @default(cuid())
@@ -125,141 +125,141 @@ model Commit {
   summary            String
 }
 
-model GitHubUserProfile {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model GitHubUserProfile {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  userName        String?
-  userAvatar      String
-  userUsername    String        @unique
-  createdIssues   Issue[]       @relation("issueCreatedBy")
-  closedIssues    Issue[]       @relation("issueClosedBy")
-  RepositoryOwned Repository[]
-  PullRequest     PullRequest[]
-}
+//   userName     String?
+//   userAvatar   String
+//   userUsername String  @unique
+//   createdIssues   Issue[]       @relation("issueCreatedBy")
+//   closedIssues    Issue[]       @relation("issueClosedBy")
+//   RepositoryOwned Repository[]
+//   PullRequest     PullRequest[]
+// }
 
-model AssignedOrReviewerUser {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model AssignedOrReviewerUser {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  userName     String
-  userAvatar   String
-  userUsername String @unique
+//   userName     String
+//   userAvatar   String
+//   userUsername String @unique
 
-  issueAssignments LinkToAssignedOrReviewerUser[] @relation("issueAssignee")
-  prAssignments    LinkToAssignedOrReviewerUser[] @relation("prAssignee")
-  prReviews        LinkToAssignedOrReviewerUser[] @relation("prReviewer")
-}
+//   issueAssignments LinkToAssignedOrReviewerUser[] @relation("issueAssignee")
+//   prAssignments    LinkToAssignedOrReviewerUser[] @relation("prAssignee")
+//   prReviews        LinkToAssignedOrReviewerUser[] @relation("prReviewer")
+// }
 
-model LinkToAssignedOrReviewerUser {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model LinkToAssignedOrReviewerUser {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  // Issue relations
-  issueId String?
-  issue   Issue?  @relation(fields: [issueId], references: [id])
+//   // Issue relations
+//   issueId String?
+//   // issue   Issue?  @relation(fields: [issueId], references: [id])
 
-  issueAssigneeId String?
-  issueAssignee   AssignedOrReviewerUser? @relation("issueAssignee", fields: [issueAssigneeId], references: [id])
+//   issueAssigneeId String?
+//   issueAssignee   AssignedOrReviewerUser? @relation("issueAssignee", fields: [issueAssigneeId], references: [id])
 
-  // PR relations
-  pullRequestId String?
-  pullRequest   PullRequest? @relation(fields: [pullRequestId], references: [id])
+//   // PR relations
+//   pullRequestId String?
+//   // pullRequest   PullRequest? @relation(fields: [pullRequestId], references: [id])
 
-  prAssigneeId String?
-  prAssignee   AssignedOrReviewerUser? @relation("prAssignee", fields: [prAssigneeId], references: [id])
+//   prAssigneeId String?
+//   prAssignee   AssignedOrReviewerUser? @relation("prAssignee", fields: [prAssigneeId], references: [id])
 
-  prReviewerId String?
-  prReviewer   AssignedOrReviewerUser? @relation("prReviewer", fields: [prReviewerId], references: [id])
+//   prReviewerId String?
+//   prReviewer   AssignedOrReviewerUser? @relation("prReviewer", fields: [prReviewerId], references: [id])
 
-  @@unique([issueAssigneeId, issueId])
-  @@unique([prAssigneeId, pullRequestId])
-  @@unique([prReviewerId, pullRequestId])
-}
+//   @@unique([issueAssigneeId, issueId])
+//   @@unique([prAssigneeId, pullRequestId])
+//   @@unique([prReviewerId, pullRequestId])
+// }
 
-model Label {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model Label {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  name  String  @unique
-  color String?
+//   name  String  @unique
+//   color String?
 
-  issueLabel LinkToLabel[] @relation("issueLabels")
-  prLabel    LinkToLabel[] @relation("prLabels")
-}
+//   issueLabel LinkToLabel[] @relation("issueLabels")
+//   prLabel    LinkToLabel[] @relation("prLabels")
+// }
 
-model LinkToLabel {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model LinkToLabel {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  issueLabelId  String?
-  prLabelId     String?
-  issueId       String?
-  pullRequestId String?
+//   issueLabelId  String?
+//   prLabelId     String?
+//   issueId       String?
+//   pullRequestId String?
 
-  issueLabel  Label?       @relation("issueLabels", fields: [issueLabelId], references: [id])
-  issue       Issue?       @relation(fields: [issueId], references: [id])
-  prLabel     Label?       @relation("prLabels", fields: [prLabelId], references: [id])
-  PullRequest PullRequest? @relation(fields: [pullRequestId], references: [id])
+//   issueLabel  Label?       @relation("issueLabels", fields: [issueLabelId], references: [id])
+//   issue       Issue?       @relation(fields: [issueId], references: [id])
+//   prLabel     Label?       @relation("prLabels", fields: [prLabelId], references: [id])
+//   PullRequest PullRequest? @relation(fields: [pullRequestId], references: [id])
 
-  @@unique([issueLabelId, issueId])
-  @@unique([prLabelId, pullRequestId])
-}
+//   @@unique([issueLabelId, issueId])
+//   @@unique([prLabelId, pullRequestId])
+// }
 
-model Issue {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model Issue {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
+//   projectId String
+//   project   Project @relation(fields: [projectId], references: [id])
 
-  issueId             String                         @unique
-  issueNumber         Int
-  issueState          String
-  issueTitle          String
-  issueDescription    String?
-  issueCreatedAt      DateTime
-  issueCreatorId      String
-  issueCreator        GitHubUserProfile              @relation("issueCreatedBy", fields: [issueCreatorId], references: [id])
-  issueToAssignedUser LinkToAssignedOrReviewerUser[]
-  issueLabel          LinkToLabel[]
-  issueClosedById     String?
-  issueCloser         GitHubUserProfile?             @relation("issueClosedBy", fields: [issueClosedById], references: [id])
-  issueClosedDate     DateTime?
+//   issueId             String                         @unique
+//   issueNumber         Int
+//   issueState          String
+//   issueTitle          String
+//   issueDescription    String?
+//   issueCreatedAt      DateTime
+//   issueCreatorId      String
+//   issueCreator        GitHubUserProfile              @relation("issueCreatedBy", fields: [issueCreatorId], references: [id])
+//   issueToAssignedUser LinkToAssignedOrReviewerUser[]
+//   issueLabel          LinkToLabel[]
+//   issueClosedById     String?
+//   issueCloser         GitHubUserProfile?             @relation("issueClosedBy", fields: [issueClosedById], references: [id])
+//   issueClosedDate     DateTime?
 
-  hash String @unique
-}
+//   hash String @unique
+// }
 
-model PullRequest {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model PullRequest {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
+//   projectId String
+//   project   Project @relation(fields: [projectId], references: [id])
 
-  prId          String                         @unique
-  prNumber      Int
-  prTitle       String
-  prState       String
-  prHeadRef     String
-  prBaseRef     String
-  prDescription String?
-  prCreatorId   String
-  prCreator     GitHubUserProfile              @relation(fields: [prCreatorId], references: [id])
-  prCreatedAt   DateTime
-  prLabel       LinkToLabel[]
-  assignments   LinkToAssignedOrReviewerUser[]
-  prClosedAt    DateTime?
-  prMergedAt    DateTime?
-  hash          String                         @unique
-}
+//   prId          String                         @unique
+//   prNumber      Int
+//   prTitle       String
+//   prState       String
+//   prHeadRef     String
+//   prBaseRef     String
+//   prDescription String?
+//   prCreatorId   String
+//   prCreator     GitHubUserProfile              @relation(fields: [prCreatorId], references: [id])
+//   prCreatedAt   DateTime
+//   prLabel       LinkToLabel[]
+//   assignments   LinkToAssignedOrReviewerUser[]
+//   prClosedAt    DateTime?
+//   prMergedAt    DateTime?
+//   hash          String                         @unique
+// }
 
 model StripeTransaction {
   id        String   @id @default(cuid())

@@ -16,7 +16,7 @@ export const groupIssuesByLastSixMonths = (issues: GitHubIssue[]) => {
 
   // Group the issues by month
   issues.forEach((issues) => {
-    const issueDate = new Date(issues.issueCreatedAt);
+    const issueDate = issues.createdAt;
     const monthYear = issueDate.toLocaleString("default", {
       month: "long",
       year: "numeric",

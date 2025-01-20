@@ -31,8 +31,7 @@ const prepareChartData = (
     return groupedIssues
       .map((group) => ({
         month: group.month,
-        items: group.items?.filter((item) => item.issueState === currentTab)
-          .length,
+        items: group.items?.filter((item) => item.state === currentTab).length,
       }))
       .reverse();
   }

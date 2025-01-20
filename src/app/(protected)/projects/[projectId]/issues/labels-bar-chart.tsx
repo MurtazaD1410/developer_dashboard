@@ -17,19 +17,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { type Label, type GitHubIssue } from "@/types/types";
-// const chartData = [
-//   { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-//   { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-//   { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-//   { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-//   { browser: "other", visitors: 90, fill: "var(--color-other)" },
-// ];
+import { type GitHubIssue } from "@/types/types";
 
 const prepareChartData = (issues: GitHubIssue[], currentTab: string) => {
   let labeledIssues = issues.flatMap((issue) =>
-    issue.issueLabel
-      ? issue.issueLabel.map((label) => ({
+    issue.label
+      ? issue.label.map((label) => ({
           label: label,
           issue,
         }))
@@ -38,24 +31,16 @@ const prepareChartData = (issues: GitHubIssue[], currentTab: string) => {
 
   if (currentTab !== "all") {
     labeledIssues = issues
-      .filter((item) => item.issueState === currentTab)
+      .filter((item) => item.state === currentTab)
       .flatMap((issue) =>
-        issue.issueLabel
-          ? issue.issueLabel.map((label) => ({
+        issue.label
+          ? issue.label.map((label) => ({
               label: label,
               issue,
             }))
           : [],
       );
   }
-
-  // const groupedByLabel = _.groupBy(labeledIssues, "label");
-
-  // return Object.entries(groupedByLabel).map(([label, issues]) => ({
-  //   label,
-  //   issues: issues.map((entry) => entry?.issue).length,
-  //   fill: label,
-  // }));
 
   const groupedByLabel = labeledIssues.reduce(
     (
@@ -158,9 +143,31 @@ const IssueLabelsBarChart = ({
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) =>
-                chartConfig[value as keyof typeof chartConfig]?.label as string
-              }
+              tick={({ x, y, payload }) => {
+                const maxLength = 15; // Maximum length for labels
+                const label =
+                  payload.value.length > maxLength
+                    ? `${payload.value.slice(0, maxLength)}...`
+                    : payload.value;
+
+                return (
+                  <text
+                    x={x}
+                    y={y}
+                    dy={3}
+                    textAnchor="end"
+                    fill="#000"
+                    fontSize="12"
+                    style={{
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {label}
+                  </text>
+                );
+              }}
             />
             <XAxis dataKey="issues" type="number" hide />
             <ChartTooltip

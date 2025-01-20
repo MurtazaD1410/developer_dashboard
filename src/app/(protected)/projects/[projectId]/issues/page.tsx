@@ -16,15 +16,19 @@ const IssuesPage = () => {
   const { projectId, isLoading, isError } = useProject();
   const { data: issues } = api.project.getIssues.useQuery({ projectId });
   const [chartDataTabName, setChartDataTabName] = useState<string>("all");
-
-  if (isLoading) <LoadingPage />;
-
-  if (!isLoading && !issues) {
-    return <div className="">No Issues to list</div>;
+  // Show loading state
+  if (isLoading) {
+    return <LoadingPage />;
   }
 
+  // Handle error state
   if (isError) {
-    throw new Error("Error fetching Issues");
+    return <div className="text-red-500">Error fetching Issues</div>;
+  }
+
+  // Handle no issues case
+  if (!issues || issues.length === 0) {
+    return <div>No Issues to list</div>;
   }
 
   let groupedIssues: { month: string; items: GitHubIssue[] | undefined }[] = [];

@@ -44,8 +44,8 @@ const prepareChartData = (
           return {
             month: group.month,
             created: items.length, // Total PRs created
-            merged: items.filter((pr) => pr.prMergedAt !== null).length, // PRs that were merged
-            closed: items.filter((pr) => pr.prClosedAt !== null).length, // PRs that were closed
+            merged: items.filter((pr) => pr.mergedAt !== null).length, // PRs that were merged
+            closed: items.filter((pr) => pr.closedAt !== null).length, // PRs that were closed
           };
         })
         .reverse();
@@ -55,7 +55,7 @@ const prepareChartData = (
           const items = group.items || [];
           return {
             month: group.month,
-            created: items.filter((item) => item.prState === "open").length,
+            created: items.filter((item) => item.state === "open").length,
           };
         })
         .reverse();
@@ -66,7 +66,7 @@ const prepareChartData = (
           return {
             month: group.month,
             closed: items.filter(
-              (pr) => pr.prState === "closed" && pr.prMergedAt === null,
+              (pr) => pr.state === "closed" && pr.mergedAt === null,
             ).length,
           };
         })
@@ -77,7 +77,7 @@ const prepareChartData = (
           const items = group.items || [];
           return {
             month: group.month,
-            merged: items.filter((pr) => pr.prMergedAt !== null).length,
+            merged: items.filter((pr) => pr.mergedAt !== null).length,
           };
         })
         .reverse();
@@ -115,6 +115,9 @@ const MonthlyPrsAreaChart = ({
   currentTab,
 }: MonthlyIssueChartProps) => {
   const chartData = prepareChartData(groupedPrs, currentTab);
+  console.log(groupedPrs);
+
+  console.log(chartData);
 
   return (
     <Card>
@@ -127,24 +130,6 @@ const MonthlyPrsAreaChart = ({
           <div>No data available for the selected timeframe.</div>
         )}
         <ChartContainer config={chartConfig}>
-          {/* <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dashed" />}
-            />
-            <Bar dataKey="created" fill="var(--color-created)" radius={4} />
-            <Bar dataKey="merged" fill="var(--color-merged)" radius={4} />
-            <Bar dataKey="closed" fill="var(--color-closed)" radius={4} />
-          </BarChart> */}
-
           <AreaChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <YAxis

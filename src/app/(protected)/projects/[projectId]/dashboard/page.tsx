@@ -79,21 +79,21 @@ const DashboardPage = () => {
           <CardHeader className="">
             <div className="flex flex-row items-center justify-between">
               <CardTitle className="text-2xl">
-                {repository?.repoName?.toUpperCase()}
+                {repository?.name?.toUpperCase()}
                 <Badge
                   className={cn(
                     "mx-4 gap-x-2 rounded-full p-1 px-2",
-                    repository?.repoPrivate ? "bg-red-500" : "bg-green-500",
+                    repository?.private ? "bg-red-500" : "bg-green-500",
                   )}
                   variant={"default"}
                 >
-                  {repository?.repoPrivate ? (
+                  {repository?.private ? (
                     <LockIcon size={16} />
                   ) : (
                     <UnlockIcon size={16} />
                   )}
 
-                  {repository?.repoPrivate ? "Private" : "Public"}
+                  {repository?.private ? "Private" : "Public"}
                 </Badge>
               </CardTitle>
               <Link
@@ -108,9 +108,9 @@ const DashboardPage = () => {
             </div>
             <div className="flex flex-wrap items-center gap-x-2">
               {repository &&
-                repository.repoTopics &&
-                repository.repoTopics?.length > 0 &&
-                repository.repoTopics?.map((topic) => {
+                repository.topics &&
+                repository.topics?.length > 0 &&
+                repository.topics?.map((topic) => {
                   return (
                     <Badge
                       key={topic}
@@ -134,19 +134,19 @@ const DashboardPage = () => {
                 Repository Owner
               </h1>
               <Link
-                href={`https://github.com/${repository?.repoOwner.userUsername}`}
+                href={`https://github.com/${repository?.owner.userName}`}
                 className="cursor-pointer"
               >
                 <Avatar className="size-32 border border-none">
                   <AvatarImage
-                    src={repository?.repoOwner.userAvatar ?? undefined}
+                    src={repository?.owner.userAvatar ?? undefined}
                   />
                 </Avatar>
               </Link>
               <p className="font-semibold">
-                {repository?.repoOwner.userUsername &&
-                  repository?.repoOwner.userUsername[0]?.toUpperCase() +
-                    repository?.repoOwner.userUsername.slice(1)}
+                {repository?.owner.userName &&
+                  repository?.owner.userName[0]?.toUpperCase() +
+                    repository?.owner.userName.slice(1)}
               </p>
             </div>
             <div className="flex flex-col items-center justify-between space-y-5 border-b-2 border-t-2 py-10 lg:border-b-0 lg:border-l-2 lg:border-r-2 lg:border-t-0 lg:p-0">
@@ -154,10 +154,10 @@ const DashboardPage = () => {
                 Open Issues
               </h1>
               <p className="cursor-pointer text-6xl">
-                {repository?.repoOpenIssues}
+                {repository?.openIssues}
               </p>
               <Link
-                href={`https://github.com/${repository?.repoOwner.userUsername}`}
+                href={`https://github.com/${repository?.owner.userName}`}
                 className="inline-flex cursor-pointer items-center gap-x-2 font-semibold"
               >
                 Go to issues
@@ -169,8 +169,8 @@ const DashboardPage = () => {
                 Repository created
               </h1>
               <p className="cursor-pointer text-center text-6xl">
-                {repository?.repoCreatedAt &&
-                  getRelativeTime(repository?.repoCreatedAt)}
+                {repository?.createdAt &&
+                  getRelativeTime(repository?.createdAt)}
               </p>
               <p className="font-semibold">Ago</p>
             </div>

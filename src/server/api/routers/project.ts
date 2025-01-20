@@ -1,12 +1,17 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { pollCommits, pollIssues, pollPrs, pollRepository } from "@/lib/github";
+import {
+  getIssues,
+  getPullRequests,
+  getRepository,
+  pollCommits,
+} from "@/lib/github";
 import {
   type GitHubIssue,
   type GitHubCommit,
-  type GitHubRepository,
-  type GitHubPullRequest,
   type Project,
+  type GitHubPullRequest,
+  type GitHubRepository,
 } from "@/types/types";
 import { checkCredits } from "@/lib/github-loader";
 // import { indexGithubRepo } from "@/lib/github-loader";
@@ -65,10 +70,7 @@ export const projectRouter = createTRPCRouter({
         },
       });
 
-      await pollRepository(project.id);
       await pollCommits(project.id);
-      await pollIssues(project.id);
-      await pollPrs(project.id);
 
       return project;
     }),
@@ -142,22 +144,13 @@ export const projectRouter = createTRPCRouter({
         projectId: z.string(),
       }),
     )
-    .query(async ({ ctx, input }): Promise<GitHubRepository | null> => {
-      pollRepository(input.projectId).then().catch(console.error);
-      return await ctx.db.repository.findFirst({
-        where: {
-          projectId: input.projectId,
-        },
-        include: {
-          repoOwner: {
-            include: {
-              createdIssues: false,
-              closedIssues: false,
-              RepositoryOwned: false,
-            },
-          },
-        },
-      });
+    .query(async ({ ctx, input }): Promise<GitHubRepository> => {
+      try {
+        const repository = await getRepository(input.projectId);
+        return repository;
+      } catch (error) {
+        throw new Error("Error fetching issues");
+      }
     }),
   getCommits: protectedProcedure
     .input(
@@ -166,7 +159,6 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }): Promise<GitHubCommit[]> => {
-      pollRepository(input.projectId).then().catch(console.error);
       pollCommits(input.projectId).then().catch(console.error);
       return await ctx.db.commit.findMany({
         where: {
@@ -182,52 +174,12 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }): Promise<GitHubIssue[]> => {
-      pollIssues(input.projectId).then().catch(console.error);
-      const issues = await ctx.db.issue.findMany({
-        where: {
-          projectId: input.projectId,
-        },
-        include: {
-          issueCloser: {
-            include: {
-              createdIssues: false,
-              closedIssues: false,
-            },
-          },
-          issueCreator: {
-            include: {
-              createdIssues: false,
-            },
-          },
-          issueToAssignedUser: {
-            include: {
-              issueAssignee: {},
-            },
-          },
-          issueLabel: {
-            include: {
-              issueLabel: true,
-            },
-          },
-        },
-      });
-
-      const formattedIssues = issues.map((issue) => ({
-        ...issue,
-        issueAssignees: issue.issueToAssignedUser.map((item) => ({
-          id: item.issueAssignee?.id,
-          assigneeOrReviewerName: item.issueAssignee?.userName,
-          assigneeOrReviewerAvatar: item.issueAssignee?.userAvatar,
-          assigneeOrReviewerUsername: item.issueAssignee?.userUsername,
-        })),
-        issueLabel: issue.issueLabel.map((item) => ({
-          id: item.issueLabelId,
-          name: item.issueLabel?.name,
-          color: item.issueLabel?.color,
-        })),
-      }));
-
-      return formattedIssues;
+      try {
+        const issues = await getIssues(input.projectId);
+        return issues;
+      } catch (error) {
+        throw new Error("Error fetching issues");
+      }
     }),
 
   getPullRequests: protectedProcedure
@@ -237,64 +189,12 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }): Promise<GitHubPullRequest[]> => {
-      pollPrs(input.projectId).then().catch(console.error);
-      const prs = await ctx.db.pullRequest.findMany({
-        where: {
-          projectId: input.projectId,
-        },
-
-        include: {
-          prCreator: {
-            include: {
-              createdIssues: false,
-              closedIssues: false,
-              PullRequest: false,
-            },
-          },
-          assignments: {
-            include: {
-              prReviewer: true,
-              prAssignee: true,
-            },
-          },
-          prLabel: {
-            include: {
-              issue: false,
-              issueLabel: false,
-              PullRequest: false,
-              prLabel: true,
-            },
-          },
-        },
-      });
-
-      const formattedPrs = prs.map((pr) => ({
-        ...pr,
-        assignments: undefined,
-        prAssignees: pr.assignments
-          .filter((assignment) => assignment.prAssignee) // Filter out assignments without `prAssignee`
-          .map((assignment) => ({
-            id: assignment.prAssignee?.id,
-            assigneeOrReviewerName: assignment.prAssignee?.userName,
-            assigneeOrReviewerAvatar: assignment.prAssignee?.userAvatar,
-            assigneeOrReviewerUsername: assignment.prAssignee?.userUsername,
-          })),
-        prReviewers: pr.assignments
-          .filter((assignment) => assignment.prReviewer) // Filter out assignments without `prReviewer`
-          .map((assignment) => ({
-            id: assignment.prReviewer?.id,
-            assigneeOrReviewerName: assignment.prReviewer?.userName,
-            assigneeOrReviewerAvatar: assignment.prReviewer?.userAvatar,
-            assigneeOrReviewerUsername: assignment.prReviewer?.userUsername,
-          })),
-        prLabel: pr.prLabel.map((item) => ({
-          id: item.prLabelId,
-          name: item.prLabel?.name,
-          color: item.prLabel?.color,
-        })),
-      }));
-
-      return formattedPrs;
+      try {
+        const prs = await getPullRequests(input.projectId);
+        return prs;
+      } catch (error) {
+        throw new Error("Error fetching prs");
+      }
     }),
 
   getMyCredits: protectedProcedure.query(async ({ ctx }) => {
