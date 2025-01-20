@@ -138,13 +138,8 @@ const DashboardPage = () => {
                   return (
                     <Badge
                       key={topic}
-                      className="my-2"
+                      className="my-2 border-2 border-secondary-foreground"
                       variant={"outline"}
-                      style={{
-                        borderRadius: 5,
-                        backgroundColor: `#E5E4E2`,
-                        borderColor: "#000000",
-                      }}
                     >
                       {topic}
                     </Badge>
