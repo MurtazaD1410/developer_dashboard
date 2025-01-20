@@ -7,6 +7,8 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { useEffect } from "react";
+import { connectToMongoDB } from "@/db/mongodb";
 
 export const metadata: Metadata = {
   title: "Developer Dashboard",
@@ -17,6 +19,8 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  connectToMongoDB();
+
   return (
     <ClerkProvider>
       <html lang="en" className={`${GeistSans.variable}`}>
