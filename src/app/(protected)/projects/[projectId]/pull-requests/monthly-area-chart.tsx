@@ -115,15 +115,12 @@ const MonthlyPrsAreaChart = ({
   currentTab,
 }: MonthlyIssueChartProps) => {
   const chartData = prepareChartData(groupedPrs, currentTab);
-  console.log(groupedPrs);
-
-  console.log(chartData);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Bar Chart - Pull Requests</CardTitle>
-        <CardDescription>{`${chartData?.[5]?.month} - ${chartData?.[0]?.month}`}</CardDescription>
+        <CardDescription>{`${chartData?.[0]?.month} - ${chartData?.[chartData.length - 1]?.month}`}</CardDescription>
       </CardHeader>
       <CardContent>
         {!chartData?.length && (

@@ -25,13 +25,29 @@ import useProject from "@/hooks/use-project";
 import AvatarGroup from "@/components/avatar-group";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PrLogProps {
   prs: GitHubPullRequest[];
   onTabSelect: (tabname: string) => void;
+  onItemCountSelect: (item: number) => void;
+  itemCount: number;
 }
 
-const PrLog = ({ prs, onTabSelect }: PrLogProps) => {
+const PrLog = ({
+  prs,
+  onTabSelect,
+  onItemCountSelect,
+  itemCount,
+}: PrLogProps) => {
   const { project } = useProject();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -75,20 +91,35 @@ const PrLog = ({ prs, onTabSelect }: PrLogProps) => {
     <>
       <Card className="rounded-md">
         <CardContent className="flex flex-col gap-y-3 pt-6">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search pull request by title or number..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8"
-            />
-            {searchQuery && (
-              <X
-                className="absolute right-2 top-2.5 h-4 w-4 cursor-pointer text-muted-foreground"
-                onClick={() => setSearchQuery("")}
+          <div className="flex gap-x-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search issues by title or number..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8"
               />
-            )}
+            </div>
+            <Select
+              defaultValue={itemCount.toString()}
+              onValueChange={(value) => {
+                onItemCountSelect(parseInt(value, 10));
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select pr count" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Prs</SelectLabel>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
           {searchQuery && (
             <CardDescription className="inline-flex items-center">

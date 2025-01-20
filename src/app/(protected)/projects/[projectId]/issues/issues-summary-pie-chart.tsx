@@ -89,7 +89,7 @@ const IssuesSummaryPieChart = ({
     <Card className="flex flex-col justify-between gap-0 rounded-md">
       <CardHeader className="items-center">
         <CardTitle>Pie Chart - Issues Summary</CardTitle>
-        <CardDescription>{`${groupedIssues?.[5]?.month} - ${groupedIssues?.[0]?.month}`}</CardDescription>
+        <CardDescription>{`${groupedIssues?.[groupedIssues.length - 1]?.month} - ${groupedIssues?.[0]?.month}`}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
         {!chartData.length && (

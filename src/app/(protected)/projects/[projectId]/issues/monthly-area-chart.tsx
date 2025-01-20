@@ -73,7 +73,7 @@ const MonthlyIssuesAreaChart = ({
     <Card className="rounded-md">
       <CardHeader>
         <CardTitle>Area Chart - Issues</CardTitle>
-        <CardDescription>{`${chartData?.[0]?.month} - ${chartData?.[5]?.month}`}</CardDescription>
+        <CardDescription>{`${chartData?.[0]?.month} - ${chartData?.[chartData.length - 1]?.month}`}</CardDescription>
       </CardHeader>
       <CardContent className="">
         {!chartData.length && (

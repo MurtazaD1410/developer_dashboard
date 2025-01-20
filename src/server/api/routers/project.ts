@@ -117,7 +117,6 @@ export const projectRouter = createTRPCRouter({
           deletedAt: new Date(),
         },
       });
-      // await indexGithubRepo(project.id, input.githubUrl, input.githubToken);
       return project;
     }),
 
@@ -171,31 +170,59 @@ export const projectRouter = createTRPCRouter({
     .input(
       z.object({
         projectId: z.string(),
+        page: z.number().default(1),
+        limit: z.number().default(30),
       }),
     )
-    .query(async ({ ctx, input }): Promise<GitHubIssue[]> => {
-      try {
-        const issues = await getIssues(input.projectId);
-        return issues;
-      } catch (error) {
-        throw new Error("Error fetching issues");
-      }
-    }),
+    .query(
+      async ({
+        ctx,
+        input,
+      }): Promise<{
+        issues: GitHubIssue[];
+        totalPages: number;
+      }> => {
+        try {
+          const data = await getIssues({
+            projectId: input.projectId,
+            page: input.page,
+            limit: input.limit,
+          });
+          return data;
+        } catch (error) {
+          throw new Error("Error fetching issues");
+        }
+      },
+    ),
 
   getPullRequests: protectedProcedure
     .input(
       z.object({
         projectId: z.string(),
+        page: z.number().default(1),
+        limit: z.number().default(30),
       }),
     )
-    .query(async ({ ctx, input }): Promise<GitHubPullRequest[]> => {
-      try {
-        const prs = await getPullRequests(input.projectId);
-        return prs;
-      } catch (error) {
-        throw new Error("Error fetching prs");
-      }
-    }),
+    .query(
+      async ({
+        ctx,
+        input,
+      }): Promise<{
+        prs: GitHubPullRequest[];
+        totalPages: number;
+      }> => {
+        try {
+          const data = await getPullRequests({
+            projectId: input.projectId,
+            page: input.page,
+            limit: input.limit,
+          });
+          return data;
+        } catch (error) {
+          throw new Error("Error fetching prs");
+        }
+      },
+    ),
 
   getMyCredits: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.user.findUnique({

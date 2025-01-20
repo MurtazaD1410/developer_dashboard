@@ -11,6 +11,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useProject from "@/hooks/use-project";
 import { darkenColor, formatRelativeDate } from "@/lib/utils";
@@ -30,9 +39,16 @@ import React, { useState } from "react";
 interface IssueLogProps {
   issues: GitHubIssue[];
   onTabSelect: (tabname: string) => void;
+  onItemCountSelect: (item: number) => void;
+  itemCount: number;
 }
 
-const IssueLog = ({ issues, onTabSelect }: IssueLogProps) => {
+const IssueLog = ({
+  issues,
+  onTabSelect,
+  onItemCountSelect,
+  itemCount,
+}: IssueLogProps) => {
   const { project } = useProject();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,14 +80,35 @@ const IssueLog = ({ issues, onTabSelect }: IssueLogProps) => {
     <>
       <Card className="rounded-md">
         <CardContent className="flex flex-col gap-y-3 pt-6">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search issues by title or number..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8"
-            />
+          <div className="flex gap-x-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search issues by title or number..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+            <Select
+              defaultValue={itemCount.toString()}
+              onValueChange={(value) => {
+                onItemCountSelect(parseInt(value, 10));
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select issue count" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Issues</SelectLabel>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
           {searchQuery && (
             <CardDescription className="inline-flex items-center">

@@ -15,6 +15,29 @@ export const octokit = new Octokit({
 
 // ! REPOSITORY SECTION
 
+interface requestProps {
+  projectId: string;
+  page: number;
+  limit: number;
+}
+
+async function fetchProjectGithubUrl(projectId: string) {
+  const project = await db.project.findUnique({
+    where: {
+      id: projectId,
+    },
+    select: {
+      githubUrl: true,
+    },
+  });
+
+  if (!project?.githubUrl) {
+    throw new Error("Project has no GitHub Url");
+  }
+
+  return { project, githubUrl: project.githubUrl };
+}
+
 export const getRepository = async (
   projectId: string,
 ): Promise<GitHubRepository> => {
@@ -80,7 +103,7 @@ export const getCommitHashes = async (
   );
 
   return sortedCommits.slice(0, 15).map((commit) => ({
-    commitHash: commit.sha as string,
+    commitHash: commit.sha,
     commitAuthorAvatar: commit.author?.avatar_url ?? "",
     commitAuthorName: commit.commit.author?.name ?? "",
     commitDate: commit.commit.author?.date ?? "",
@@ -129,13 +152,6 @@ export const pollCommits = async (projectId: string) => {
 };
 
 async function summarizeCommit(githubUrl: string, commitHash: string) {
-  // get diff and pass it to the summarize function
-  // const { data } = await axios.get(`${githubUrl}/commit/${commitHash}.diff`, {
-  //   headers: {
-  //     Accept: "application/vnd.github.v3.diff",
-  //     Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-  //   },
-  // });
   const [owner, repo] = githubUrl.split("/").slice(-2);
 
   if (!owner || !repo) {
@@ -172,26 +188,16 @@ async function filterUnprocessedCommits(
   return unprocessedCommits;
 }
 
-async function fetchProjectGithubUrl(projectId: string) {
-  const project = await db.project.findUnique({
-    where: {
-      id: projectId,
-    },
-    select: {
-      githubUrl: true,
-    },
-  });
-
-  if (!project?.githubUrl) {
-    throw new Error("Project has no GitHub Url");
-  }
-
-  return { project, githubUrl: project.githubUrl };
-}
-
 // ! ISSUES SECTION
 
-export const getIssues = async (projectId: string): Promise<GitHubIssue[]> => {
+export const getIssues = async ({
+  projectId,
+  page,
+  limit,
+}: requestProps): Promise<{
+  issues: GitHubIssue[];
+  totalPages: number;
+}> => {
   const { githubUrl } = await fetchProjectGithubUrl(projectId);
 
   const [owner, repo] = githubUrl.split("/").slice(-2);
@@ -200,14 +206,29 @@ export const getIssues = async (projectId: string): Promise<GitHubIssue[]> => {
     throw new Error("Invalid GitHub Url");
   }
 
-  const { data } = await octokit.rest.issues.listForRepo({
+  const { data, headers } = await octokit.rest.issues.listForRepo({
     owner,
     repo,
     state: "all",
-    per_page: 100,
+    page,
+    per_page: limit,
     sort: "created",
     direction: "desc",
   });
+
+  const linkHeader = headers.link;
+  let totalPages = 1;
+
+  if (linkHeader) {
+    const links = linkHeader.split(",");
+    const lastLink = links.find((link) => link.includes('rel="last"'));
+    if (lastLink) {
+      const pageMatch = lastLink.match(/&page=(\d+)/);
+      if (pageMatch && pageMatch[1]) {
+        totalPages = parseInt(pageMatch[1]);
+      }
+    }
+  }
 
   const formattedIssues = data.map((issue) => ({
     id: issue.id,
@@ -249,14 +270,22 @@ export const getIssues = async (projectId: string): Promise<GitHubIssue[]> => {
       }) ?? null,
   }));
 
-  return formattedIssues;
+  return {
+    issues: formattedIssues,
+    totalPages,
+  };
 };
 
 // ! PULLS SECTION
 
-export const getPullRequests = async (
-  projectId: string,
-): Promise<GitHubPullRequest[]> => {
+export const getPullRequests = async ({
+  projectId,
+  page,
+  limit,
+}: requestProps): Promise<{
+  prs: GitHubPullRequest[];
+  totalPages: number;
+}> => {
   const { githubUrl } = await fetchProjectGithubUrl(projectId);
 
   const [owner, repo] = githubUrl.split("/").slice(-2);
@@ -265,14 +294,29 @@ export const getPullRequests = async (
     throw new Error("Invalid GitHub Url");
   }
 
-  const { data } = await octokit.rest.pulls.list({
+  const { data, headers } = await octokit.rest.pulls.list({
     owner,
     repo,
     state: "all",
-    per_page: 100,
+    page,
+    per_page: limit,
     sort: "created",
     direction: "desc",
   });
+
+  const linkHeader = headers.link;
+  let totalPages = 1;
+
+  if (linkHeader) {
+    const links = linkHeader.split(",");
+    const lastLink = links.find((link) => link.includes('rel="last"'));
+    if (lastLink) {
+      const pageMatch = lastLink.match(/&page=(\d+)/);
+      if (pageMatch && pageMatch[1]) {
+        totalPages = parseInt(pageMatch[1]);
+      }
+    }
+  }
 
   const formattedPrs = data.map((pr) => ({
     id: pr.id,
@@ -316,5 +360,8 @@ export const getPullRequests = async (
     closedAt: pr.closed_at ? new Date(pr.closed_at) : null,
   }));
 
-  return formattedPrs;
+  return {
+    prs: formattedPrs,
+    totalPages,
+  };
 };
