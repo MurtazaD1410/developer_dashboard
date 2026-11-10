@@ -17,6 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { type GitHubIssue } from "@/types/types";
+import { useTheme } from "next-themes";
 
 const prepareChartData = (
   groupedIssues: {
@@ -64,6 +65,7 @@ const MonthlyIssuesAreaChart = ({
   groupedIssues,
   currentTab,
 }: MonthlyIssueChartProps) => {
+  const { theme } = useTheme();
   const chartData = prepareChartData(groupedIssues, currentTab);
 
   return (

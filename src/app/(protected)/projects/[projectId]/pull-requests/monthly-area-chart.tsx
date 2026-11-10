@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/chart";
 
 import { type GitHubPullRequest } from "@/types/types";
+import { useTheme } from "next-themes";
 
 const prepareChartData = (
   groupedPrs: {
@@ -78,21 +79,6 @@ const prepareChartData = (
   }
 };
 
-const chartConfig = {
-  created: {
-    label: "Created PRs",
-    color: "rgb(34 197 94 / var(--tw-text-opacity, 1))",
-  },
-  merged: {
-    label: "Merged PRs",
-    color: "rgb(168 85 247 / var(--tw-text-opacity, 1))",
-  },
-  closed: {
-    label: "Closed PRs",
-    color: "rgb(239 68 68 / var(--tw-text-opacity, 1))",
-  },
-} satisfies ChartConfig;
-
 interface MonthlyIssueChartProps {
   groupedPrs: {
     month: string;
@@ -105,7 +91,23 @@ const MonthlyPrsAreaChart = ({
   groupedPrs,
   currentTab,
 }: MonthlyIssueChartProps) => {
+  const { theme } = useTheme();
   const chartData = prepareChartData(groupedPrs, currentTab);
+
+  const chartConfig = {
+    created: {
+      label: "Created PRs",
+      color: theme === "dark" ? "#38B2AC" : "#81E6D9",
+    },
+    merged: {
+      label: "Merged PRs",
+      color: theme === "dark" ? "#5A67D8" : "#A3BFFA",
+    },
+    closed: {
+      label: "Closed PRs",
+      color: theme === "dark" ? "#F56565" : "#FBB6B6",
+    },
+  } satisfies ChartConfig;
 
   return (
     <Card className="rounded-md">

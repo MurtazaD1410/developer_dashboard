@@ -138,6 +138,12 @@ const IssueLabelsBarChart = ({
             }}
           >
             <CartesianGrid horizontal={false} />
+            <XAxis
+              type="number"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={10}
+            />
             <YAxis
               dataKey="label"
               type="category"

@@ -1,7 +1,7 @@
 export interface GitHubUserProfile {
-  id?: number;
-  userName?: string;
-  userAvatar?: string;
+  id?: number | null;
+  userName?: string | null;
+  userAvatar?: string | null;
 }
 
 export interface Label {
@@ -106,6 +106,24 @@ export interface GitHubPullRequest {
   changedFiles: number;
   draft: boolean | undefined;
   mergeable: boolean | null;
-  autoMerge: boolean | null;
   maintainerCanModify: boolean;
+  reviews: {
+    id: number;
+    state: string;
+    submittedAt: Date | null;
+    reviewer: GitHubUserProfile;
+  }[];
+  commits: {
+    sha: string;
+    message: string;
+    authorName: string | null;
+    authorEmail: string | null;
+    createdAt: Date | null;
+  }[];
+  // timelineEvents: {
+  //   id: string;
+  //   event: string;
+  //   createdAt: Date;
+  //   actor: GitHubUserProfile | null;
+  // }[];
 }

@@ -20,6 +20,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+import { useTheme } from "next-themes";
 const chartData = [
   { month: "January", small: 186, medium: 80, large: 80 },
   { month: "February", small: 305, medium: 200, large: 200 },
@@ -29,26 +31,34 @@ const chartData = [
   { month: "June", small: 214, medium: 140, large: 140 },
 ];
 
-const chartConfig = {
-  small: {
-    label: "Small (<50 changes)",
-    color: "#82ca9d",
-  },
-  medium: {
-    label: "Medium (50-300 changes)",
-    color: "#8884d8",
-  },
-  large: {
-    label: "Large (>300 changes)",
-    color: "#ffc658",
-  },
-} satisfies ChartConfig;
-
 const PrSizeDistributionBarChartPlaceholder = () => {
+  const { theme } = useTheme();
+
+  const chartConfig = {
+    small: {
+      label: "Small (<50 changes)",
+      color: theme === "dark" ? "#2B6CB0" : "#63B3ED", // Blue
+    },
+    medium: {
+      label: "Medium (50-300 changes)",
+      color: theme === "dark" ? "#D69E2E" : "#F6E05E", // Yellow
+    },
+    large: {
+      label: "Large (>300 changes)",
+      color: theme === "dark" ? "#E53E3E" : "#FC8181", // Red
+    },
+  } satisfies ChartConfig;
+
   return (
     <div className="relative">
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-md bg-background/80">
-        <Button variant="default" className="font-semibold">
+        <Button
+          variant="default"
+          className="font-semibold"
+          onClick={() => {
+            redirect("/billing");
+          }}
+        >
           Upgrade to Pro
         </Button>
       </div>

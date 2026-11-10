@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/chart";
 import { type GitHubIssue } from "@/types/types";
 import React, { useMemo } from "react";
+import { useTheme } from "next-themes";
 
 const prepareComplexityData = (
   groupedIssues: { month: string; items: GitHubIssue[] | undefined }[],
@@ -57,15 +58,25 @@ interface IssueComplexityDistributionBarChartProps {
 const IssueComplexityDistributionBarChart = ({
   groupedIssues,
 }: IssueComplexityDistributionBarChartProps) => {
+  const { theme } = useTheme();
   const complexityData = useMemo(
     () => prepareComplexityData(groupedIssues.reverse()),
     [groupedIssues],
   );
 
   const chartConfig: ChartConfig = {
-    simple: { label: "Simple", color: "rgb(34 197 94)" },
-    moderate: { label: "Moderate", color: "rgb(168 85 247)" },
-    complex: { label: "Complex", color: "rgb(245 158 11)" },
+    simple: {
+      label: "Simple",
+      color: theme === "dark" ? "#2B6CB0" : "#63B3ED",
+    },
+    moderate: {
+      label: "Moderate",
+      color: theme === "dark" ? "#D69E2E" : "#F6E05E",
+    },
+    complex: {
+      label: "Complex",
+      color: theme === "dark" ? "#E53E3E" : "#FC8181",
+    },
   };
 
   return (
@@ -107,21 +118,21 @@ const IssueComplexityDistributionBarChart = ({
             <Bar
               dataKey="simple"
               stackId="a"
-              fill="rgb(34 197 94)"
+              fill="var(--color-simple)"
               name="Simple"
               radius={4}
             />
             <Bar
               dataKey="moderate"
               stackId="a"
-              fill="rgb(168 85 247)"
+              fill="var(--color-moderate)"
               name="Moderate"
               radius={4}
             />
             <Bar
               dataKey="complex"
               stackId="a"
-              fill="rgb(245 158 11)"
+              fill="var(--color-complex)"
               name="Complex"
               radius={4}
             />

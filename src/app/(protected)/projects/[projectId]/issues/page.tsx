@@ -30,6 +30,7 @@ import IssueResolutionDistributionBarChart from "./issue-resolution-time-distrib
 import IssueComplexityDistributionBarChart from "./issue-complexity-bar-chart";
 import IssueComplexityDistributionPlaceholderBarChart from "./issue-complexity-bar-chart-placeholder";
 import IssueResolutionDistributionPlaceholderBarChart from "./issue-resolution-time-distribution-placeholder";
+import PlaceHolderChart from "@/components/placeholder-chart";
 
 const IssuesPage = () => {
   const { projectId, isLoading, isError } = useProject();
@@ -90,7 +91,7 @@ const IssuesPage = () => {
     issues &&
     groupedIssues && (
       <div className="flex flex-col gap-5">
-        <BasicIssuesSummary groupedIssues={groupedIssues} issues={issues} />
+        <BasicIssuesSummary issues={issues} />
         {user?.tier === "basic" && <AdvancedIssuesSummaryPlaceholder />}
         {user?.tier !== "basic" && (
           <AdvancedIssuesSummary
@@ -126,6 +127,7 @@ const IssuesPage = () => {
               groupedIssues={groupedIssues}
             />
           )}
+          <PlaceHolderChart />
         </div>
         <IssueLog
           issues={issues}

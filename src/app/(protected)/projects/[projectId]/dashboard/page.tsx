@@ -50,13 +50,13 @@ const DashboardPage = () => {
   }
 
   const canInviteMembers = () => {
-    if (user?.tier === "basic" && (members?.length ?? 0) >= 3) {
+    if (user?.tier === "basic" && (members?.length ?? 0) >= 1) {
       return false;
     }
-    if (user?.tier === "pro" && (members?.length ?? 0) >= 5) {
+    if (user?.tier === "pro" && (members?.length ?? 0) >= 3) {
       return false;
     }
-    if (user?.tier === "premium" && (members?.length ?? 0) >= 10) {
+    if (user?.tier === "premium" && (members?.length ?? 0) >= 5) {
       return false;
     }
 
@@ -176,7 +176,7 @@ const DashboardPage = () => {
                 {repository?.openIssues}
               </p>
               <Link
-                href={`https://github.com/${repository?.owner.userName}`}
+                href={`https://github.com/${repository?.owner.userName}/${repository?.name}/issues`}
                 className="inline-flex cursor-pointer items-center gap-x-2 font-semibold"
               >
                 Go to issues
@@ -202,3 +202,5 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+
+// https://localhost:3000/projects/cm641gf370004uw7s2xoiqu1f/join/Y3hK8b

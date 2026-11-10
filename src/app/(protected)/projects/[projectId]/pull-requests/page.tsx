@@ -6,10 +6,7 @@ import React, { useState } from "react";
 import PrLog from "./pr-log";
 import LoadingPage from "@/app/(protected)/loading";
 import { type GitHubPullRequest } from "@/types/types";
-import {
-  groupIssuesByDateRange,
-  groupPrsByLastSixMonths,
-} from "./helper/group-prs-last-six-months";
+import { groupIssuesByDateRange } from "./helper/group-prs-last-six-months";
 import MonthlyPrsAreaChart from "./monthly-area-chart";
 import PrLabelsBarChart from "./labels-bar-chart";
 import PrsSummaryPieChart from "./pr-summary-pie-chart";
@@ -21,13 +18,16 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { GitPullRequest, PlusCircle, SearchCodeIcon } from "lucide-react";
+import { GitPullRequest, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PrSizeDistributionBarChart from "./pr-size-distribution-bar-chart";
 import AvgReviewTimeLineChart from "./avg-review-time-line-chart";
 import PrBasicSummary from "./pr-summary-basic";
 import AvgReviewTimeLineChartPlaceholder from "./avg-review-time-line-chart-placeholder";
 import PrSizeDistributionBarChartPlaceholder from "./pr-size-distribution-bar-chart-placeholder";
+import AdvancedPrsSummaryPlaceholder from "./pr-summary-advaced-placeholder";
+import AdvancedPrsSummary from "./pr-summary-advanced";
+import PlaceHolderChart from "@/components/placeholder-chart";
 
 const PullRequestsPage = () => {
   const { projectId, isLoading, isError } = useProject();
@@ -82,7 +82,9 @@ const PullRequestsPage = () => {
     prs &&
     groupedPrs && (
       <div className="flex flex-col gap-5">
-        <PrBasicSummary groupedPrs={groupedPrs} />
+        <PrBasicSummary pullRequests={prs} />
+        {user?.tier === "basic" && <AdvancedPrsSummaryPlaceholder />}
+        {user?.tier !== "basic" && <AdvancedPrsSummary pullRequests={prs} />}
         <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
           <div className="lg:col-span-2 2xl:col-span-1">
             <MonthlyPrsAreaChart
@@ -108,6 +110,7 @@ const PullRequestsPage = () => {
           ) : (
             <PrSizeDistributionBarChart groupedPrs={groupedPrs} />
           )}
+          <PlaceHolderChart />
         </div>
         <PrLog
           prs={prs}

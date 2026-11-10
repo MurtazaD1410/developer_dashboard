@@ -238,54 +238,54 @@ export const projectRouter = createTRPCRouter({
       });
     }),
 
-  changeMemberRole: protectedProcedure
-    .input(
-      z.object({
-        projectId: z.string(),
-        userId: z.string(),
-        role: z.enum([UserRole.member, UserRole.admin]),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const userRole = await ctx.db.userToProject.findUnique({
-        where: {
-          projectId_userId: {
-            projectId: input.projectId,
-            userId: ctx.user.userId!,
-          },
-        },
-        select: {
-          role: true,
-        },
-      });
+  // changeMemberRole: protectedProcedure
+  //   .input(
+  //     z.object({
+  //       projectId: z.string(),
+  //       userId: z.string(),
+  //       role: z.enum([UserRole.member, UserRole.admin]),
+  //     }),
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     const userRole = await ctx.db.userToProject.findUnique({
+  //       where: {
+  //         projectId_userId: {
+  //           projectId: input.projectId,
+  //           userId: ctx.user.userId!,
+  //         },
+  //       },
+  //       select: {
+  //         role: true,
+  //       },
+  //     });
 
-      if (userRole?.role !== "ADMIN") {
-        throw new Error("Unauthorized");
-      }
+  //     if (userRole?.role !== "ADMIN") {
+  //       throw new Error("Unauthorized");
+  //     }
 
-      const adminCount = await ctx.db.userToProject.count({
-        where: {
-          projectId: input.projectId,
-          role: "ADMIN",
-        },
-      });
+  //     const adminCount = await ctx.db.userToProject.count({
+  //       where: {
+  //         projectId: input.projectId,
+  //         role: "ADMIN",
+  //       },
+  //     });
 
-      if (input.role === "MEMBER" && adminCount <= 1) {
-        throw new Error("There must be at least one admin in the project.");
-      }
+  //     if (input.role === "MEMBER" && adminCount <= 1) {
+  //       throw new Error("There must be at least one admin in the project.");
+  //     }
 
-      return await ctx.db.userToProject.update({
-        where: {
-          projectId_userId: {
-            projectId: input.projectId,
-            userId: input.userId,
-          },
-        },
-        data: {
-          role: input.role,
-        },
-      });
-    }),
+  //     return await ctx.db.userToProject.update({
+  //       where: {
+  //         projectId_userId: {
+  //           projectId: input.projectId,
+  //           userId: input.userId,
+  //         },
+  //       },
+  //       data: {
+  //         role: input.role,
+  //       },
+  //     });
+  //   }),
 
   removeMember: protectedProcedure
     .input(

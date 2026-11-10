@@ -17,6 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { TrendingUp } from "lucide-react";
+import { useTheme } from "next-themes";
 
 const prepareChartData = (
   groupedPrs: { month: string; items: GitHubPullRequest[] | undefined }[],
@@ -48,21 +49,6 @@ const prepareChartData = (
   return prSizeData;
 };
 
-const chartConfig = {
-  small: {
-    label: "Small (<50 changes)",
-    color: "#82ca9d",
-  },
-  medium: {
-    label: "Medium (50-300 changes)",
-    color: "#8884d8",
-  },
-  large: {
-    label: "Large (>300 changes)",
-    color: "#ffc658",
-  },
-};
-
 interface PrSizeDistributionBarChartProps {
   groupedPrs: { month: string; items: GitHubPullRequest[] | undefined }[];
 }
@@ -70,7 +56,23 @@ interface PrSizeDistributionBarChartProps {
 const PrSizeDistributionBarChart = ({
   groupedPrs,
 }: PrSizeDistributionBarChartProps) => {
-  const chartData = prepareChartData(groupedPrs);
+  const { theme } = useTheme();
+  const chartData = prepareChartData(groupedPrs).reverse();
+
+  const chartConfig = {
+    small: {
+      label: "Small (<50 changes)",
+      color: theme === "dark" ? "#2B6CB0" : "#63B3ED", // Blue
+    },
+    medium: {
+      label: "Medium (50-300 changes)",
+      color: theme === "dark" ? "#D69E2E" : "#F6E05E", // Yellow
+    },
+    large: {
+      label: "Large (>300 changes)",
+      color: theme === "dark" ? "#E53E3E" : "#FC8181", // Red
+    },
+  };
 
   return (
     <div className="space-y-6">

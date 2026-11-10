@@ -16,14 +16,14 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { MemberAvatar } from "./member-avatar";
 import { Badge } from "@/components/ui/badge";
-import { UserRole } from "@/types/types";
+import { type UserRole } from "@/types/types";
 import { toast } from "sonner";
 import useRefetch from "@/hooks/use-refetch";
 
 export const MembersList = () => {
   const { projectId } = useProject();
   const refetch = useRefetch();
-  const changeMemberRole = api.project.changeMemberRole.useMutation();
+  // const changeMemberRole = api.project.changeMemberRole.useMutation();
   const removeMember = api.project.removeMember.useMutation();
   const { data: members } = api.project.getTeamMembers.useQuery({ projectId });
   const { data: userRole } = api.user.getUserRole.useQuery({ projectId });
@@ -81,36 +81,36 @@ export const MembersList = () => {
     }
   };
 
-  const handleChangeMemberRole = (userId: string, role: UserRole) => {
-    if (userRole?.role === "ADMIN") {
-      const adminCount =
-        members?.filter((member) => member.role === "ADMIN").length ?? 0;
+  // const handleChangeMemberRole = (userId: string, role: UserRole) => {
+  //   if (userRole?.role === "ADMIN") {
+  //     const adminCount =
+  //       members?.filter((member) => member.role === "ADMIN").length ?? 0;
 
-      if (role === "MEMBER" && adminCount <= 1) {
-        toast.error("There must be at least one admin in the project.");
-        return;
-      }
+  //     if (role === "MEMBER" && adminCount <= 1) {
+  //       toast.error("There must be at least one admin in the project.");
+  //       return;
+  //     }
 
-      changeMemberRole.mutate(
-        {
-          projectId,
-          userId,
-          role,
-        },
-        {
-          onSuccess: () => {
-            toast.success("Member role changed");
-            refetch();
-          },
-          onError: () => {
-            toast.error("Failed to change member role");
-          },
-        },
-      );
-    } else {
-      toast.error("You are not authorized to change the role of a member.");
-    }
-  };
+  //     changeMemberRole.mutate(
+  //       {
+  //         projectId,
+  //         userId,
+  //         role,
+  //       },
+  //       {
+  //         onSuccess: () => {
+  //           toast.success("Member role changed");
+  //           refetch();
+  //         },
+  //         onError: () => {
+  //           toast.error("Failed to change member role");
+  //         },
+  //       },
+  //     );
+  //   } else {
+  //     toast.error("You are not authorized to change the role of a member.");
+  //   }
+  // };
 
   return (
     <Card className="h-full w-full border-none shadow-none">
@@ -148,18 +148,19 @@ export const MembersList = () => {
                 >
                   {member.role}
                 </Badge>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      className="ml-auto"
-                      variant={"secondary"}
-                      size="icon"
-                    >
-                      <MoreVerticalIcon className="size-4 text-muted-foreground" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent side="bottom" align="end">
-                    {member.role === "MEMBER" && (
+                {member.role !== "ADMIN" && userRole?.role === "ADMIN" && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        className="ml-auto"
+                        variant={"secondary"}
+                        size="icon"
+                      >
+                        <MoreVerticalIcon className="size-4 text-muted-foreground" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent side="bottom" align="end">
+                      {/* {member.role === "MEMBER" && (
                       <DropdownMenuItem
                         className="font-medium"
                         onClick={() => {
@@ -184,20 +185,21 @@ export const MembersList = () => {
                       >
                         Set as Member
                       </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem
-                      className="font-medium text-amber-700"
-                      onClick={() => {
-                        handleRemoveMember(
-                          member.user.id,
-                          member.role as UserRole,
-                        );
-                      }}
-                    >
-                      Remove {member.user.firstName}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    )} */}
+                      <DropdownMenuItem
+                        className="font-medium text-amber-700"
+                        onClick={() => {
+                          handleRemoveMember(
+                            member.user.id,
+                            member.role as UserRole,
+                          );
+                        }}
+                      >
+                        Remove {member.user.firstName}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
             </div>
             {index < members.length - 1 && <Separator className="my-2.5" />}

@@ -17,6 +17,7 @@ import {
   ChartTooltip,
 } from "@/components/ui/chart";
 import { type GitHubPullRequest } from "@/types/types";
+import { useTheme } from "next-themes";
 const prepareChartData = (
   gropedPrs: {
     month: string;
@@ -24,7 +25,6 @@ const prepareChartData = (
   }[],
 ) => {
   const allPrs = gropedPrs.flatMap((group) => group.items || []);
-
   const open = allPrs.filter((item) => item.state === "open").length;
   const closedPrs = allPrs.filter(
     (pr) => pr.state === "closed" && pr.mergedAt === null,
@@ -50,21 +50,6 @@ const prepareChartData = (
   ];
 };
 
-const chartConfig = {
-  created: {
-    label: "Open PRs",
-    color: "rgb(34 197 94 / var(--tw-text-opacity, 1))",
-  },
-  merged: {
-    label: "Merged PRs",
-    color: "rgb(168 85 247 / var(--tw-text-opacity, 1))",
-  },
-  closed: {
-    label: "Closed PRs",
-    color: "rgb(239 68 68 / var(--tw-text-opacity, 1))",
-  },
-} satisfies ChartConfig;
-
 interface PrsSummaryPieChartProps {
   groupedPrs: {
     month: string;
@@ -73,10 +58,26 @@ interface PrsSummaryPieChartProps {
 }
 
 const PrsSummaryPieChart = ({ groupedPrs }: PrsSummaryPieChartProps) => {
+  const { theme } = useTheme();
   const chartData = prepareChartData(groupedPrs);
   const totalPrs = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.prs, 0);
   }, [chartData]);
+
+  const chartConfig = {
+    created: {
+      label: "Open PRs",
+      color: theme === "dark" ? "#38B2AC" : "#81E6D9",
+    },
+    merged: {
+      label: "Merged PRs",
+      color: theme === "dark" ? "#5A67D8" : "#A3BFFA",
+    },
+    closed: {
+      label: "Closed PRs",
+      color: theme === "dark" ? "#F56565" : "#FBB6B6",
+    },
+  } satisfies ChartConfig;
 
   return (
     <Card className="flex flex-col justify-between gap-0 rounded-md">

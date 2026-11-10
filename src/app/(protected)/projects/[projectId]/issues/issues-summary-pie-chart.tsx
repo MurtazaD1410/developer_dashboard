@@ -17,6 +17,7 @@ import {
   ChartTooltip,
 } from "@/components/ui/chart";
 import { type GitHubIssue } from "@/types/types";
+import { useTheme } from "next-themes";
 const prepareChartData = (
   groupedIssues: {
     month: string;
@@ -52,24 +53,6 @@ const prepareChartData = (
   ];
 };
 
-const chartConfig = {
-  issues: {
-    label: "Issues",
-  },
-  open: {
-    label: "Open",
-    color: "rgb(34 197 94 / var(--tw-text-opacity, 1))", // You might want to use green or your preferred color
-  },
-  closed: {
-    label: "Closed",
-    color: "rgb(168 85 247 / var(--tw-text-opacity, 1))", // You might want to use red or your preferred color
-  },
-  dismissed: {
-    label: "Dismissed",
-    color: "rgb(245 158 11 / var(--tw-text-opacity, 1))",
-  },
-} satisfies ChartConfig;
-
 interface IssuesSummaryPieChartProps {
   groupedIssues: {
     month: string;
@@ -80,10 +63,29 @@ interface IssuesSummaryPieChartProps {
 const IssuesSummaryPieChart = ({
   groupedIssues,
 }: IssuesSummaryPieChartProps) => {
+  const { theme } = useTheme();
   const chartData = prepareChartData(groupedIssues);
   const totalIssues = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.issues, 0);
   }, [chartData]);
+
+  const chartConfig = {
+    issues: {
+      label: "Issues",
+    },
+    open: {
+      label: "Open",
+      color: theme === "dark" ? "#38B2AC" : "#81E6D9",
+    },
+    closed: {
+      label: "Closed",
+      color: theme === "dark" ? "#5A67D8" : "#A3BFFA",
+    },
+    dismissed: {
+      label: "Dismissed",
+      color: theme === "dark" ? "#F56565" : "#FBB6B6",
+    },
+  } satisfies ChartConfig;
 
   return (
     <Card className="flex flex-col justify-between gap-0 rounded-md">

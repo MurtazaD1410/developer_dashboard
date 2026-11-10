@@ -468,6 +468,132 @@ export const getIssues = async ({
 //   };
 // };
 
+// export const getPullRequests = async ({
+//   projectId,
+//   page,
+//   limit,
+// }: requestProps): Promise<{
+//   prs: GitHubPullRequest[];
+//   totalPages: number;
+// }> => {
+//   const { githubUrl } = await fetchProjectGithubUrl(projectId);
+
+//   const [owner, repo] = githubUrl.split("/").slice(-2);
+
+//   if (!owner || !repo) {
+//     throw new Error("Invalid GitHub Url");
+//   }
+
+//   // First get the PR list
+//   const { data, headers } = await octokit.rest.pulls.list({
+//     owner,
+//     repo,
+//     state: "all",
+//     page,
+//     per_page: limit,
+//     sort: "created",
+//     direction: "desc",
+//   });
+
+//   // Get detailed PR data including comments and review data
+//   const detailedPRs = await Promise.all(
+//     data.map(async (pr) => {
+//       // Get PR details including comments count
+//       const { data: prDetails } = await octokit.rest.pulls.get({
+//         owner,
+//         repo,
+//         pull_number: pr.number,
+//       });
+
+//       // Get review comments count
+//       const { data: reviewComments } =
+//         await octokit.rest.pulls.listReviewComments({
+//           owner,
+//           repo,
+//           pull_number: pr.number,
+//         });
+
+//       return {
+//         prData: pr,
+//         details: prDetails,
+//         reviewCommentsCount: reviewComments.length,
+//       };
+//     }),
+//   );
+
+//   const linkHeader = headers.link;
+//   let totalPages = 1;
+
+//   if (linkHeader) {
+//     const links = linkHeader.split(",");
+//     const lastLink = links.find((link) => link.includes('rel="last"'));
+//     if (lastLink) {
+//       const pageMatch = lastLink.match(/&page=(\d+)/);
+//       if (pageMatch && pageMatch[1]) {
+//         totalPages = parseInt(pageMatch[1]);
+//       }
+//     }
+//   }
+
+//   const formattedPrs = detailedPRs.map(
+//     ({ prData: pr, details, reviewCommentsCount }) => ({
+//       id: pr.id,
+//       number: pr.number,
+//       title: pr.title,
+//       state: pr.state,
+//       headRef: pr.head.ref,
+//       baseRef: pr.base.ref,
+//       description: pr.body ?? null,
+//       creator: {
+//         id: pr.user?.id,
+//         userName: pr.user?.login,
+//         userAvatar: pr.user?.avatar_url,
+//       },
+//       createdAt: new Date(pr.created_at),
+//       mergedAt: pr.merged_at ? new Date(pr.merged_at) : null,
+//       label:
+//         pr.labels.map((label) => {
+//           if (typeof label === "string") {
+//             return { id: null, name: label, color: null };
+//           } else {
+//             return {
+//               id: label.id,
+//               name: label.name,
+//               color: label.color ?? null,
+//             };
+//           }
+//         }) ?? null,
+//       assignees:
+//         pr.assignees?.map((assignee) => ({
+//           id: assignee.id,
+//           userName: assignee.login,
+//           userAvatar: assignee.avatar_url,
+//         })) ?? null,
+//       reviewers:
+//         pr.requested_reviewers?.map((reviewer) => ({
+//           id: reviewer.id,
+//           userName: reviewer.login,
+//           userAvatar: reviewer.avatar_url,
+//         })) ?? null,
+//       closedAt: pr.closed_at ? new Date(pr.closed_at) : null,
+//       // Added fields
+//       commentsCount: details.comments,
+//       reviewCommentsCount,
+//       additions: details.additions,
+//       deletions: details.deletions,
+//       changedFiles: details.changed_files,
+//       draft: details.draft,
+//       mergeable: details.mergeable,
+//       maintainerCanModify: details.maintainer_can_modify,
+//     }),
+//   );
+
+//   return {
+//     prs: formattedPrs,
+//     totalPages,
+//   };
+// };
+
 export const getPullRequests = async ({
   projectId,
   page,
@@ -477,14 +603,12 @@ export const getPullRequests = async ({
   totalPages: number;
 }> => {
   const { githubUrl } = await fetchProjectGithubUrl(projectId);
-
   const [owner, repo] = githubUrl.split("/").slice(-2);
 
   if (!owner || !repo) {
     throw new Error("Invalid GitHub Url");
   }
 
-  // First get the PR list
   const { data, headers } = await octokit.rest.pulls.list({
     owner,
     repo,
@@ -495,17 +619,17 @@ export const getPullRequests = async ({
     direction: "desc",
   });
 
-  // Get detailed PR data including comments and review data
+  // Get detailed PR data including reviews, comments, and commits
   const detailedPRs = await Promise.all(
     data.map(async (pr) => {
-      // Get PR details including comments count
+      // Get PR details
       const { data: prDetails } = await octokit.rest.pulls.get({
         owner,
         repo,
         pull_number: pr.number,
       });
 
-      // Get review comments count
+      // Get review comments
       const { data: reviewComments } =
         await octokit.rest.pulls.listReviewComments({
           owner,
@@ -513,17 +637,33 @@ export const getPullRequests = async ({
           pull_number: pr.number,
         });
 
+      // Get reviews
+      const { data: reviews } = await octokit.rest.pulls.listReviews({
+        owner,
+        repo,
+        pull_number: pr.number,
+      });
+
+      // Get commits
+      const { data: commits } = await octokit.rest.pulls.listCommits({
+        owner,
+        repo,
+        pull_number: pr.number,
+      });
+
       return {
         prData: pr,
         details: prDetails,
-        reviewCommentsCount: reviewComments.length,
+        reviewComments,
+        reviews,
+        commits,
       };
     }),
   );
 
+  // Calculate total pages
   const linkHeader = headers.link;
   let totalPages = 1;
-
   if (linkHeader) {
     const links = linkHeader.split(",");
     const lastLink = links.find((link) => link.includes('rel="last"'));
@@ -536,7 +676,13 @@ export const getPullRequests = async ({
   }
 
   const formattedPrs = detailedPRs.map(
-    ({ prData: pr, details, reviewCommentsCount }) => ({
+    ({
+      prData: pr,
+      details,
+      reviewComments,
+      reviews,
+      commits,
+    }): GitHubPullRequest => ({
       id: pr.id,
       number: pr.number,
       title: pr.title,
@@ -551,18 +697,11 @@ export const getPullRequests = async ({
       },
       createdAt: new Date(pr.created_at),
       mergedAt: pr.merged_at ? new Date(pr.merged_at) : null,
-      label:
-        pr.labels.map((label) => {
-          if (typeof label === "string") {
-            return { id: null, name: label, color: null };
-          } else {
-            return {
-              id: label.id,
-              name: label.name,
-              color: label.color ?? null,
-            };
-          }
-        }) ?? null,
+      label: pr.labels.map((label) => ({
+        id: typeof label === "string" ? null : label.id,
+        name: typeof label === "string" ? label : label.name,
+        color: typeof label === "string" ? null : (label.color ?? null),
+      })),
       assignees:
         pr.assignees?.map((assignee) => ({
           id: assignee.id,
@@ -576,16 +715,33 @@ export const getPullRequests = async ({
           userAvatar: reviewer.avatar_url,
         })) ?? null,
       closedAt: pr.closed_at ? new Date(pr.closed_at) : null,
-      // Added fields
       commentsCount: details.comments,
-      reviewCommentsCount,
+      reviewCommentsCount: reviewComments.length,
       additions: details.additions,
       deletions: details.deletions,
       changedFiles: details.changed_files,
       draft: details.draft,
       mergeable: details.mergeable,
-      autoMerge: details.auto_merge,
       maintainerCanModify: details.maintainer_can_modify,
+      reviews: reviews.map((review) => ({
+        id: review.id,
+        state: review.state,
+        submittedAt: review.submitted_at ? new Date(review.submitted_at) : null,
+        reviewer: {
+          id: review.user?.id || null,
+          userName: review.user?.login || null,
+          userAvatar: review.user?.avatar_url || null,
+        },
+      })),
+      commits: commits.map((commit) => ({
+        sha: commit.sha,
+        message: commit.commit.message,
+        authorName: commit.commit.author?.name || null,
+        authorEmail: commit.commit.author?.email || null,
+        createdAt: commit.commit.author?.date
+          ? new Date(commit.commit.author?.date)
+          : null,
+      })),
     }),
   );
 

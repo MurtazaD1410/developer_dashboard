@@ -1,6 +1,5 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import {
@@ -18,6 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 const chartData = [
   { month: "January", desktop: 186 },
   { month: "February", desktop: 305 },
@@ -38,7 +38,13 @@ const AvgReviewTimeLineChartPlaceholder = () => {
   return (
     <div className="relative">
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-md bg-background/80">
-        <Button variant="default" className="font-semibold">
+        <Button
+          variant="default"
+          className="font-semibold"
+          onClick={() => {
+            redirect("/billing");
+          }}
+        >
           Upgrade to Pro
         </Button>
       </div>

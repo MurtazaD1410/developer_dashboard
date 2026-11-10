@@ -97,6 +97,11 @@ const PricingPage = () => {
   );
 
   const canCancelSubscription = async () => {
+    if ((projects?.length ?? 0) > 3) {
+      toast.error("Delete some projects to cancel the subscription");
+      return;
+    }
+
     const ok = await confirmDelete();
 
     if (!ok) return;
@@ -108,8 +113,8 @@ const PricingPage = () => {
           toast.success("Subscription has been cancelled");
           refetch();
         },
-        onError: () => {
-          toast.error("Failed to cancel subscription");
+        onError: (error) => {
+          toast.error(error.message ?? "Failed to cancel subscription");
         },
       },
     );

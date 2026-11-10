@@ -20,6 +20,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+import { useTheme } from "next-themes";
 const chartData = [
   { month: "January", quick: 186, medium: 80, long: 80 },
   { month: "February", quick: 305, medium: 200, long: 200 },
@@ -29,17 +31,33 @@ const chartData = [
   { month: "June", quick: 214, medium: 140, long: 140 },
 ];
 
-const chartConfig: ChartConfig = {
-  quick: { label: "< 1 day", color: "rgb(34 197 94)" },
-  medium: { label: "1-7 days", color: "rgb(168 85 247)" },
-  long: { label: "> 7 days", color: "rgb(245 158 11)" },
-};
-
 const IssueResolutionDistributionPlaceholderBarChart = () => {
+  const { theme } = useTheme();
+  const chartConfig: ChartConfig = {
+    quick: {
+      label: "< 1 day",
+      color: theme === "dark" ? "#38B2AC" : "#81E6D9",
+    },
+    medium: {
+      label: "1-7 days",
+      color: theme === "dark" ? "#D69E2E" : "#FBBF24",
+    },
+    long: {
+      label: "> 7 days",
+      color: theme === "dark" ? "#6B46C1" : "#B794F4",
+    },
+  };
+
   return (
     <div className="relative">
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-md bg-background/80">
-        <Button variant="default" className="font-semibold">
+        <Button
+          variant="default"
+          className="font-semibold"
+          onClick={() => {
+            redirect("/billing");
+          }}
+        >
           Upgrade to Pro
         </Button>
       </div>

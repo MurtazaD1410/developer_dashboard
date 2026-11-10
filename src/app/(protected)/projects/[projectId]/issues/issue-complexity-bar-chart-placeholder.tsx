@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
+import { useTheme } from "next-themes";
 const chartData = [
   { month: "January", simple: 86, moderate: 80, complex: 80 },
   { month: "February", simple: 50, moderate: 20, complex: 20 },
@@ -30,13 +31,23 @@ const chartData = [
   { month: "June", simple: 14, moderate: 40, complex: 140 },
 ];
 
-const chartConfig: ChartConfig = {
-  simple: { label: "Simple", color: "rgb(34 197 94)" },
-  moderate: { label: "Moderate", color: "rgb(168 85 247)" },
-  complex: { label: "Complex", color: "rgb(245 158 11)" },
-};
-
 const IssueComplexityDistributionBarChart = () => {
+  const { theme } = useTheme();
+  const chartConfig: ChartConfig = {
+    simple: {
+      label: "Simple",
+      color: theme === "dark" ? "#2B6CB0" : "#63B3ED",
+    },
+    moderate: {
+      label: "Moderate",
+      color: theme === "dark" ? "#D69E2E" : "#F6E05E",
+    },
+    complex: {
+      label: "Complex",
+      color: theme === "dark" ? "#E53E3E" : "#FC8181",
+    },
+  };
+
   return (
     <div className="relative">
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-md bg-background/80">

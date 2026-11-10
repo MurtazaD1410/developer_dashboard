@@ -173,7 +173,7 @@ const PrLabelsBarChart = ({
               tickMargin={10}
               axisLine={false}
               tick={({ x, y, payload }) => {
-                const maxLength = 15; // Maximum length for labels
+                const maxLength = 15;
                 const label =
                   payload.value.length > maxLength
                     ? `${payload.value.slice(0, maxLength)}...`
@@ -204,7 +204,6 @@ const PrLabelsBarChart = ({
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickCount={5}
               domain={["auto", "dataMax + 2"]}
             />
             <ChartTooltip

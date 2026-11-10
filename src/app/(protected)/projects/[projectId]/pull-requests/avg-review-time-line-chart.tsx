@@ -40,7 +40,7 @@ const prepareChartData = (
         .reduce((acc, pr) => {
           const created = new Date(pr.createdAt).getTime();
           const merged = new Date(pr.mergedAt!).getTime();
-          return acc + (merged - created) / (1000 * 60 * 60); // Convert to hours
+          return acc + (merged - created) / (1000 * 60 * 60);
         }, 0) / (group.items?.filter((pr) => pr.mergedAt).length || 1);
 
     return {
@@ -117,7 +117,7 @@ const AvgReviewTimeLineChart = ({
           Average Review Time (Hours)
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing the average time in hours spent in reviewing
+          Showing the time between when the pr is created and merged
         </div>
       </CardFooter>
     </Card>

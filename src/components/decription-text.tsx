@@ -82,13 +82,11 @@ const DescriptionRenderer: React.FC<DescriptionRendererProps> = ({
         ),
         // Make images responsive
         img: ({ src, alt }) => (
-          <div className="max-w-80">
-            <img
-              src={src || ""}
-              alt={alt || "Image"}
-              className="h-auto max-w-full object-contain"
-            />
-          </div>
+          <img
+            src={src || ""}
+            alt={alt || "Image"}
+            className="h-auto max-w-96 object-contain"
+          />
         ),
         // Style links and ensure they wrap
         a: ({ href, children }) => (

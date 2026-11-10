@@ -88,6 +88,7 @@ const InviteButton = ({ canInviteMembers, tier }: InviteButtonProps) => {
               variant={"outline"}
               size={"icon"}
               onClick={async () => {
+                setOpen(false);
                 const ok = await confirmResetInviteCode();
 
                 if (!ok) return;
@@ -97,6 +98,7 @@ const InviteButton = ({ canInviteMembers, tier }: InviteButtonProps) => {
                     { projectId },
                     {
                       onSuccess: () => {
+                        setOpen(true);
                         toast.success("Invite code reset was successful");
                         refetch();
                       },

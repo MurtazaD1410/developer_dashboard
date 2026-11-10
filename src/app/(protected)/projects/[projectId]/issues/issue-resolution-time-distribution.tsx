@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/chart";
 import { type GitHubIssue } from "@/types/types";
 import React, { useMemo } from "react";
+import { useTheme } from "next-themes";
 
 const prepareResolutionData = (
   groupedIssues: { month: string; items: GitHubIssue[] | undefined }[],
@@ -60,15 +61,25 @@ interface IssueResolutionDistributionBarChartProps {
 const IssueResolutionDistributionBarChart = ({
   groupedIssues,
 }: IssueResolutionDistributionBarChartProps) => {
+  const { theme } = useTheme();
   const resolutionData = useMemo(
     () => prepareResolutionData(groupedIssues.reverse()),
     [groupedIssues],
   );
 
   const chartConfig: ChartConfig = {
-    quick: { label: "< 1 day", color: "rgb(34 197 94)" },
-    medium: { label: "1-7 days", color: "rgb(168 85 247)" },
-    long: { label: "> 7 days", color: "rgb(245 158 11)" },
+    quick: {
+      label: "< 1 day",
+      color: theme === "dark" ? "#38B2AC" : "#81E6D9",
+    },
+    medium: {
+      label: "1-7 days",
+      color: theme === "dark" ? "#D69E2E" : "#FBBF24",
+    },
+    long: {
+      label: "> 7 days",
+      color: theme === "dark" ? "#6B46C1" : "#B794F4",
+    },
   };
 
   return (
@@ -110,21 +121,21 @@ const IssueResolutionDistributionBarChart = ({
             <Bar
               dataKey="quick"
               stackId="a"
-              fill="rgb(34 197 94)"
+              fill="var(--color-quick)"
               name="< 1 day"
               radius={4}
             />
             <Bar
               dataKey="medium"
               stackId="b"
-              fill="rgb(168 85 247)"
+              fill="var(--color-medium)"
               name="1-7 days"
               radius={4}
             />
             <Bar
               dataKey="long"
               stackId="c"
-              fill="rgb(245 158 11)"
+              fill="var(--color-long)"
               name="> 7 days"
               radius={4}
             />
